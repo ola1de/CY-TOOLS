@@ -1,0 +1,3531 @@
+<!DOCTYPE html>
+<html lang="en">  
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AzuraNook DevTools | All-in-One Web Toolkit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- QR Code Library --> 
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    
+    <style>
+    :root {
+        --primary: #6366f1;
+        --primary-light: #818cf8;
+        --primary-dark: #4f46e5;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+        
+        /* Light Theme */
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --bg-card: #ffffff;
+        --bg-input: #ffffff;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --text-muted: #9ca3af;
+        --border-color: #e5e7eb;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dark-mode {
+        --primary: #818cf8;
+        --primary-light: #a5b4fc;
+        --primary-dark: #6366f1;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-card: #1e293b;
+        --bg-input: #334155;
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border-color: #334155;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+        transition: var(--transition);
+    }
+
+    /* Header */
+    .header {
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 2rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        box-shadow: var(--shadow-sm);
+        backdrop-filter: blur(10px);
+    }
+
+    .header-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 1.5rem;
+        transition: var(--transition);
+    }
+
+    .logo:hover {
+        transform: translateY(-2px);
+        color: var(--primary);
+    }
+
+    .logo-icon {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: white;
+    }
+
+    .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .theme-toggle {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+        background: var(--primary);
+        color: white;
+        transform: rotate(30deg);
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .nav-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .nav-link:hover {
+        background: var(--bg-input);
+        color: var(--primary);
+    }
+
+    .nav-link.active {
+        background: var(--primary);
+        color: white;
+    }
+
+    .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-md);
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    /* Main Container */
+    .main-container {
+        max-width: 1400px;
+        margin: 80px auto 0;
+        padding: 2rem;
+    }
+
+    /* Dashboard */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--primary), var(--secondary));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .stat-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .stat-trend.positive {
+        color: var(--success);
+    }
+
+    .stat-trend.negative {
+        color: var(--danger);
+    }
+
+    /* Tools Grid */
+    .tools-section {
+        margin-top: 3rem;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.75rem;
+        color: var(--text-primary);
+    }
+
+    .tools-filter {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-btn:hover {
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .filter-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .tool-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tool-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary);
+    }
+
+    .tool-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+    }
+
+    .tool-icon {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tool-card h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+    }
+
+    .tool-card p {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .tool-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .tool-tag {
+        background: var(--bg-input);
+        color: var(--text-secondary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .tool-status {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        background: var(--success);
+        color: white;
+        font-weight: 500;
+    }
+
+    /* Tool Pages */
+    .tool-page {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .tool-page.active {
+        display: block;
+    }
+
+    .tool-header {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+    }
+
+    .tool-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .tool-header p {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        max-width: 800px;
+    }
+
+    .tool-container {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+    }
+
+    .tool-section {
+        padding: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .tool-section:last-child {
+        border-bottom: none;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .section-title i {
+        color: var(--primary);
+    }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .form-input, textarea.form-input, select.form-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        background: var(--bg-input);
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+
+    .form-input:focus, textarea.form-input:focus, select.form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    textarea.form-input {
+        min-height: 120px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .input-group {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .input-group .form-input {
+        flex: 1;
+    }
+
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: var(--transition);
+        border: 2px solid transparent;
+        font-family: inherit;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-secondary {
+        background: var(--bg-input);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--border-color);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--success), #059669);
+        color: white;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--danger), #dc2626);
+        color: white;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border-color: var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    /* Code Editor */
+    .code-editor {
+        font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        tab-size: 2;
+    }
+
+    /* Color Picker Components */
+    .color-picker-container {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+    }
+
+    .color-display {
+        width: 100%;
+        height: 200px;
+        border-radius: var(--radius-lg);
+        background: var(--primary);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .color-values {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .color-value-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .color-value-group label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .color-value-group input {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+    }
+
+    /* News Ticker */
+    .ticker-preview {
+        width: 100%;
+        height: 60px;
+        background: var(--bg-input);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        position: relative;
+        border: 1px solid var(--border-color);
+    }
+
+    .ticker-content {
+        display: flex;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        align-items: center;
+        white-space: nowrap;
+        animation: ticker-scroll 20s linear infinite;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    @keyframes ticker-scroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
+
+    /* Result Display */
+    .result-container {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        display: none;
+    }
+
+    .result-container.active {
+        display: block;
+        animation: slideUp 0.3s ease;
+    }
+
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .result-content {
+        background: var(--bg-input);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        font-family: monospace;
+        font-size: 0.9rem;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    /* Notifications */
+    .notification-container {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 400px;
+    }
+
+    .notification {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow-lg);
+        border-left: 4px solid var(--primary);
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        transform: translateX(100%);
+        animation: slideIn 0.3s ease forwards;
+    }
+
+    @keyframes slideIn {
+        to { transform: translateX(0); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .tools-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+        
+        .color-picker-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header {
+            padding: 1rem;
+        }
+        
+        .nav-links {
+            display: none;
+        }
+        
+        .mobile-menu-btn {
+            display: flex;
+        }
+        
+        .main-container {
+            padding: 1rem;
+            margin-top: 70px;
+        }
+        
+        .dashboard-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .tools-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .tools-filter {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+
+    /* Mobile Menu */
+    .mobile-menu {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border-color);
+        padding: 1rem;
+        display: none;
+        z-index: 999;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .mobile-menu.active {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .mobile-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        color: var(--text-primary);
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        margin-bottom: 0.5rem;
+        transition: var(--transition);
+    }
+
+    .mobile-nav-link:hover, .mobile-nav-link.active {
+        background: var(--bg-input);
+        color: var(--primary);
+    }
+
+    /* Encryption Tools */
+    .encryption-methods {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .method-card {
+        background: var(--bg-input);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .method-card:hover {
+        border-color: var(--primary);
+    }
+
+    .method-card.active {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.1);
+    }
+
+    /* Footer */
+    .footer {
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border-color);
+        padding: 3rem 2rem 2rem;
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+    }
+
+    .footer-section h3 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .footer-links {
+        list-style: none;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .footer-links a:hover {
+        color: var(--primary);
+    }
+
+    .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        margin-top: 2rem;
+        border-top: 1px solid var(--border-color);
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* ============================ */
+    /* URL SHORTENER SPECIFIC STYLES */
+    /* ============================ */
+    
+    /* URL Display */
+    .url-display {
+        background: var(--bg-input);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        border: 1px solid var(--border-color);
+        margin: 1rem 0;
+        font-family: monospace;
+        font-size: 0.95rem;
+        word-break: break-all;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .url-display a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .url-display a:hover {
+        text-decoration: underline;
+    }
+
+    .copy-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+        background: var(--bg-input);
+    }
+
+    .copy-btn.copied {
+        background: var(--success);
+        color: white;
+        border-color: var(--success);
+    }
+
+    /* Countdown Box Styles */
+    .countdown-box {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        text-align: center;
+        margin: 1.5rem 0;
+        display: none;
+        position: relative;
+    }
+
+    .countdown-box.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .countdown-number {
+        font-size: 4rem;
+        font-weight: 800;
+        line-height: 1;
+        margin: 1rem 0;
+        font-family: monospace;
+        text-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .countdown-text {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .skip-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+        margin-top: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .skip-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .redirect-message {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 1rem;
+        line-height: 1.5;
+    }
+
+    .cancel-redirect-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+        margin-top: 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .cancel-redirect-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* QR Code Container */
+    .qr-container {
+        text-align: center;
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+        background: var(--bg-input);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+    }
+
+    .qr-container h4 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    #qrCode {
+        max-width: 200px;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+        border-radius: var(--radius-md);
+    }
+
+    /* Custom Notification */
+    .custom-notification {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+        padding: 1.25rem;
+        min-width: 300px;
+        max-width: 400px;
+        z-index: 9999;
+        transform: translateX(150%);
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        border-left: 5px solid var(--primary);
+        border: 1px solid var(--border-color);
+    }
+
+    .dark-mode .custom-notification {
+        background: var(--bg-secondary);
+    }
+
+    .custom-notification.show {
+        transform: translateX(0);
+    }
+
+    .notification-icon {
+        font-size: 1.5rem;
+        color: var(--primary);
+        margin-right: 0.75rem;
+    }
+
+    .notification-title {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .notification-message {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-top: 0.5rem;
+    }
+
+    .notification-close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 1.1rem;
+    }
+
+    .notification-close:hover {
+        color: var(--text-primary);
+    }
+
+    /* Input Icon Wrapper */
+    .input-icon-wrapper {
+        position: relative;
+    }
+
+    .input-icon-wrapper i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .input-icon-wrapper input,
+    .input-icon-wrapper select {
+        padding-left: 3rem;
+    }
+
+    /* Stats Box */
+    .stats-box {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+        justify-content: center;
+    }
+
+    .stat-item {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        min-width: 180px;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+    }
+
+    .stat-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .shortener-stat-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--primary);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .shortener-stat-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* REDIRECT PAGE SPECIFIC STYLES */
+    .redirect-page {
+        display: none;
+    }
+
+    .redirect-page.active {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 70vh;
+        text-align: center;
+    }
+
+    .redirect-logo {
+        margin-bottom: 2rem;
+    }
+
+    .redirect-logo .logo-icon {
+        margin: 0 auto;
+    }
+
+    .redirect-logo h2 {
+        margin-top: 1rem;
+        color: var(--text-primary);
+    }
+
+    .redirect-ad-container {
+        width: 100%;
+        max-width: 728px;
+        min-height: 250px;
+        margin: 2rem auto;
+        background: var(--bg-input);
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .redirect-progress {
+        width: 100%;
+        max-width: 500px;
+        height: 8px;
+        background: var(--bg-input);
+        border-radius: 4px;
+        margin: 1.5rem 0;
+        overflow: hidden;
+    }
+
+    .redirect-progress-bar {
+        height: 100%;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        width: 0%;
+        transition: width 1s linear;
+    }
+
+    .redirect-destination {
+        background: var(--bg-input);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        margin: 1rem 0;
+        max-width: 600px;
+        word-break: break-all;
+        font-family: monospace;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .redirect-destination a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    .redirect-destination a:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive adjustments for URL shortener */
+    @media screen and (max-width: 768px) {
+        .countdown-number {
+            font-size: 3rem;
+        }
+        
+        .countdown-text {
+            font-size: 1rem;
+        }
+        
+        .url-display {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .url-display a {
+            min-width: auto;
+            margin-bottom: 0.5rem;
+        }
+        
+        .skip-btn {
+            padding: 0.6rem 1.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .custom-notification {
+            left: 1rem;
+            right: 1rem;
+            max-width: none;
+        }
+        
+        .redirect-ad-container {
+            min-height: 200px;
+            margin: 1.5rem auto;
+        }
+    }
+
+    @media screen and (max-width: 400px) {
+        .countdown-number {
+            font-size: 2.5rem;
+        }
+        
+        .stat-item {
+            min-width: 100%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <!-- Custom Notification -->
+    <div id="customNotification" class="custom-notification">
+        <button class="notification-close" onclick="hideCustomNotification()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="notification-title">
+            <i id="notificationIcon" class="fa-solid fa-circle-info"></i>
+            <span id="notificationTitle">Notification</span>
+        </div>
+        <div id="notificationMessage" class="notification-message"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="#" class="logo" onclick="goToHome()">
+                <div class="logo-icon">
+                    <i class="fas fa-toolbox"></i>
+                </div>
+                <span id="headerTitle">AzuraNook DevTools</span>
+            </a>
+            
+            <nav class="nav-links" id="mainNav">
+                <a href="#" class="nav-link active" onclick="goToHome()">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="#" class="nav-link" onclick="showTool('urlShortener')">
+                    <i class="fas fa-link"></i> URL Shortener
+                </a>
+                <a href="#" class="nav-link" onclick="showTool('passwordGenerator')">
+                    <i class="fas fa-key"></i> Password Gen
+                </a>
+                <a href="#" class="nav-link" onclick="showTool('urlEncoder')">
+                    <i class="fas fa-lock"></i> URL Encoder
+                </a>
+                <a href="#" class="nav-link" onclick="showTool('htmlProtector')">
+                    <i class="fas fa-shield-alt"></i> HTML Protector
+                </a>
+                <a href="#" class="nav-link" onclick="showTool('colorPicker')">
+                    <i class="fas fa-palette"></i> Color Picker
+                </a>
+                <a href="#" class="nav-link" onclick="showTool('newsTicker')">
+                    <i class="fas fa-newspaper"></i> News Ticker
+                </a>
+            </nav>
+            
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#" class="mobile-nav-link active" onclick="goToHome(); toggleMobileMenu()">
+            <i class="fas fa-home"></i> Home
+        </a>
+        <a href="#" class="mobile-nav-link" onclick="showTool('urlShortener'); toggleMobileMenu()">
+            <i class="fas fa-link"></i> URL Shortener
+        </a>
+        <a href="#" class="mobile-nav-link" onclick="showTool('passwordGenerator'); toggleMobileMenu()">
+            <i class="fas fa-key"></i> Password Generator
+        </a>
+        <a href="#" class="mobile-nav-link" onclick="showTool('urlEncoder'); toggleMobileMenu()">
+            <i class="fas fa-lock"></i> URL Encoder
+        </a>
+        <a href="#" class="mobile-nav-link" onclick="showTool('htmlProtector'); toggleMobileMenu()">
+            <i class="fas fa-shield-alt"></i> HTML Protector
+        </a>
+        <a href="#" class="mobile-nav-link" onclick="showTool('encryptionTools'); toggleMobileMenu()">
+            <i class="fas fa-lock"></i> Encryption Tools
+        </a>
+        <a href="#" class="mobile-nav-link" onclick="showTool('colorPicker'); toggleMobileMenu()">
+            <i class="fas fa-palette"></i> Color Picker
+        </a>
+        <a href="#" class="mobile-nav-link" onclick="showTool('cssObfuscator'); toggleMobileMenu()">
+            <i class="fas fa-code"></i> CSS Obfuscator
+        </a>
+        <a href="#" class="mobile-nav-link" onclick="showTool('newsTicker'); toggleMobileMenu()">
+            <i class="fas fa-newspaper"></i> News Ticker
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Homepage -->
+        <div class="homepage" id="homepage">
+            <!-- Dashboard Stats -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="stat-value" id="totalUrls">0</div>
+                    <div class="stat-label">URLs Shortened</div>
+                    <div class="stat-trend positive">
+                        <i class="fas fa-arrow-up"></i> 0% this week
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="stat-value" id="totalPasswords">5,678</div>
+                    <div class="stat-label">Passwords Generated</div>
+                    <div class="stat-trend positive">
+                        <i class="fas fa-arrow-up"></i> 24% this week
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="stat-value" id="totalPolls">890</div>
+                    <div class="stat-label">Polls Created</div>
+                    <div class="stat-trend positive">
+                        <i class="fas fa-arrow-up"></i> 8% this week
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Available Tools</div>
+                    <div class="stat-trend positive">
+                        <i class="fas fa-plus"></i> 2 new tools
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Section -->
+            <div class="tools-section">
+                <div class="section-header">
+                    <h2>Development Tools</h2>
+                    <div class="tools-filter">
+                        <button class="filter-btn active" onclick="filterTools('all')">All Tools</button>
+                        <button class="filter-btn" onclick="filterTools('web')">Web Tools</button>
+                        <button class="filter-btn" onclick="filterTools('security')">Security</button>
+                        <button class="filter-btn" onclick="filterTools('design')">Design</button>
+                    </div>
+                </div>
+                
+                <div class="tools-grid" id="toolsGrid">
+                    <!-- Tools will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Shortener Tool (WORKING VERSION) -->
+        <div class="tool-page" id="urlShortenerTool">
+            <div class="tool-header">
+                <h1><i class="fas fa-link"></i> URL Shortener</h1>
+                <p>Create short, memorable links with custom slugs and countdown redirects. Perfect for sharing long URLs.</p>
+            </div>
+
+            <div class="tool-container">
+                <div class="tool-section">
+                    <h3 class="section-title"><i class="fas fa-paperclip"></i> Shorten a URL</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-globe"></i> Enter Long URL</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-link"></i>
+                            <input type="url" id="originalUrl" class="form-input" placeholder="https://example.com/very-long-url-path" required>
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-pen"></i> Custom Slug (Optional)</label>
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-hashtag"></i>
+                                <input type="text" id="customSlug" class="form-input" placeholder="my-custom-link">
+                            </div>
+                            <small style="color: var(--text-muted); font-size: 0.85rem;">
+                                Leave empty for random code
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-clock"></i> Countdown Seconds</label>
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-stopwatch"></i>
+                                <select id="countdownTime" class="form-input">
+                                    <option value="5">5 seconds</option>
+                                    <option value="10" selected>10 seconds</option>
+                                    <option value="15">15 seconds</option>
+                                    <option value="20">20 seconds</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-lock"></i> URL Encryption</label>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;">
+                            <input type="checkbox" id="enableEncryption" checked style="width: auto;">
+                            <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                                Encrypt URL in parameters (recommended for privacy)
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="shortenUrlNew()">
+                            <i class="fas fa-wand-magic-sparkles"></i> Generate Short URL
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearUrlFormNew()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Result Section -->
+                <div class="result-container" id="resultSectionNew">
+                    <div class="result-header">
+                        <h3><i class="fas fa-check-circle" style="color: var(--success);"></i> Short URL Generated!</h3>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-success btn-sm" onclick="copyShortUrlNew()">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="testShortUrlNew()">
+                                <i class="fas fa-play"></i> Test
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="url-display" id="shortUrlDisplayNew">
+                        <a href="#" id="shortUrlLinkNew" target="_blank"></a>
+                    </div>
+                    
+                    <!-- QR Code Container -->
+                    <div class="qr-container" id="qrContainerNew" style="display: none;">
+                        <h4><i class="fas fa-qrcode"></i> QR Code</h4>
+                        <canvas id="qrCodeNew"></canvas>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.75rem;">
+                            Scan to open on mobile devices
+                        </p>
+                    </div>
+                    
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 1rem;">
+                        <i class="fas fa-info-circle"></i> This link will redirect after a <span id="countdownPreviewNew">10</span>-second countdown.
+                    </p>
+                </div>
+
+                <!-- Countdown Box (For Testing) -->
+                <div class="countdown-box" id="countdownBoxNew">
+                    <h2 style="margin-top: 0;">Redirecting to your destination</h2>
+                    <div class="countdown-number" id="countdownNumberNew">5</div>
+                    <div class="countdown-text">
+                        You will be redirected in <span id="countdownSecondsNew">5</span> seconds
+                    </div>
+                    
+                    <div class="redirect-message">
+                        <i class="fas fa-shield-alt"></i> Your original URL is protected and hidden
+                    </div>
+                    
+                    <button class="skip-btn" onclick="skipCountdownNew()">
+                        <i class="fas fa-forward-fast"></i> Skip Countdown
+                    </button>
+                    
+                    <div style="margin-top: 1rem;">
+                        <button class="cancel-redirect-btn" onclick="cancelRedirectNew()">
+                            <i class="fas fa-house"></i> Back to Shortener
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="stats-box" id="statsBoxNew">
+                    <div class="stat-item">
+                        <div class="shortener-stat-value" id="statsTotalNew">0</div>
+                        <div class="shortener-stat-label">Total URLs Shortened</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="shortener-stat-value" id="statsTodayNew">0</div>
+                        <div class="shortener-stat-label">Today</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="shortener-stat-value" id="statsClicksNew">0</div>
+                        <div class="shortener-stat-label">Total Redirects</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REDIRECT PAGE (Shown when someone visits a shortened URL) -->
+        <div class="redirect-page" id="redirectPage">
+            <div class="tool-container" style="max-width: 800px; margin: 0 auto;">
+                <div class="redirect-logo">
+                    <div class="logo-icon" style="width: 80px; height: 80px; font-size: 2rem;">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h2>AzuraNook URL Shortener</h2>
+                </div>
+
+                <div class="countdown-box" id="redirectCountdownBox">
+                    <h2 style="margin-top: 0;">Redirecting to your destination</h2>
+                    <div class="countdown-number" id="redirectCountdownNumber">10</div>
+                    <div class="countdown-text">
+                        You will be redirected in <span id="redirectCountdownSeconds">10</span> seconds
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="redirect-progress">
+                        <div class="redirect-progress-bar" id="redirectProgressBar"></div>
+                    </div>
+                    
+                    <div class="redirect-message">
+                        <i class="fas fa-shield-alt"></i> Your original URL is protected and hidden
+                    </div>
+                    
+                    <button class="skip-btn" onclick="skipRedirectCountdown()">
+                        <i class="fas fa-forward-fast"></i> Skip Countdown & Continue
+                    </button>
+                    
+                    <!-- Ad Container -->
+                    <div class="redirect-ad-container" id="redirectAdContainer">
+                        <div style="text-align: center;">
+                            <div class="ad-label" style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">
+                                ADVERTISEMENT
+                            </div>
+                            <div style="color: var(--text-muted); font-size: 11px;">
+                                Ad will be displayed here
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Destination URL Preview (Hidden for privacy) -->
+                    <div class="redirect-destination" id="redirectDestination" style="display: none;">
+                        Redirecting to: <span id="destinationUrl"></span>
+                    </div>
+                    
+                    <div style="margin-top: 1rem;">
+                        <button class="cancel-redirect-btn" onclick="cancelRedirect()">
+                            <i class="fas fa-house"></i> Back to Homepage
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="result-container" id="invalidLinkBox" style="display: none;">
+                    <div class="result-header">
+                        <h3><i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i> Invalid Link</h3>
+                    </div>
+                    
+                    <p style="color: var(--text-secondary); margin: 1rem 0;">
+                        This short URL doesn't exist or has expired.
+                    </p>
+                    
+                    <div class="btn-group" style="justify-content: center;">
+                        <button class="btn btn-primary" onclick="goToHome()">
+                            <i class="fas fa-home"></i> Go to Homepage
+                        </button>
+                        <button class="btn btn-outline" onclick="showTool('urlShortener')">
+                            <i class="fas fa-link"></i> Create New Short URL
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Encoder/Decoder Tool -->
+        <div class="tool-page" id="urlEncoderTool">
+            <div class="tool-header">
+                <h1><i class="fas fa-lock"></i> URL Encoder/Decoder</h1>
+                <p>Encode and decode URLs, Base64 strings, and special characters for safe web transmission.</p>
+            </div>
+
+            <div class="tool-container">
+                <div class="tool-section">
+                    <h3 class="section-title"><i class="fas fa-code"></i> Encode/Decode Text</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Input Text</label>
+                        <textarea id="encoderInput" class="form-input code-editor" placeholder="Enter text to encode or decode..."></textarea>
+                    </div>
+
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Operation Type</label>
+                            <select id="encodeType" class="form-input">
+                                <option value="urlEncode">URL Encode</option>
+                                <option value="urlDecode">URL Decode</option>
+                                <option value="base64Encode">Base64 Encode</option>
+                                <option value="base64Decode">Base64 Decode</option>
+                                <option value="htmlEncode">HTML Encode</option>
+                                <option value="htmlDecode">HTML Decode</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Character Set</label>
+                            <select id="charset" class="form-input">
+                                <option value="utf8">UTF-8</option>
+                                <option value="ascii">ASCII</option>
+                                <option value="latin1">Latin-1</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="processEncoder()">
+                            <i class="fas fa-cogs"></i> Process
+                        </button>
+                        <button class="btn btn-success" onclick="copyEncoderResult()">
+                            <i class="fas fa-copy"></i> Copy Result
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearEncoder()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div class="result-container" id="encoderResult">
+                    <div class="result-header">
+                        <h3><i class="fas fa-file-code"></i> Result</h3>
+                        <span style="color: var(--text-muted); font-size: 0.9rem;">
+                            <i class="fas fa-info-circle"></i> Click Copy to use
+                        </span>
+                    </div>
+                    
+                    <div class="result-content" id="encoderOutput">
+                        Result will appear here...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HTML Protector Tool -->
+        <div class="tool-page" id="htmlProtectorTool">
+            <div class="tool-header">
+                <h1><i class="fas fa-shield-alt"></i> HTML Protector</h1>
+                <p>Protect your HTML content from copying, theft, and unauthorized use with multiple protection layers.</p>
+            </div>
+
+            <div class="tool-container">
+                <div class="tool-section">
+                    <h3 class="section-title"><i class="fas fa-file-code"></i> HTML Input</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Enter HTML Code</label>
+                        <textarea id="htmlInput" class="form-input code-editor" placeholder="<html>...</html>"></textarea>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 2rem;">
+                        <i class="fas fa-sliders-h"></i> Protection Options
+                    </h3>
+                    
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-check">
+                            <input type="checkbox" id="disableRightClick" checked>
+                            <label style="color: var(--text-primary);">Disable Right Click</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="disableTextSelection" checked>
+                            <label style="color: var(--text-primary);">Disable Text Selection</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="disableCopy" checked>
+                            <label style="color: var(--text-primary);">Disable Copy (Ctrl+C)</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="disablePrintScreen" checked>
+                            <label style="color: var(--text-primary);">Disable Print Screen</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="addWatermark">
+                            <label style="color: var(--text-primary);">Add Invisible Watermark</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="obfuscateCode">
+                            <label style="color: var(--text-primary);">Obfuscate HTML Code</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Watermark Text (Optional)</label>
+                        <input type="text" id="watermarkText" class="form-input" placeholder="Copyright © Your Name">
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="protectHTML()">
+                            <i class="fas fa-shield-alt"></i> Protect HTML
+                        </button>
+                        <button class="btn btn-success" onclick="copyProtectedHTML()">
+                            <i class="fas fa-copy"></i> Copy Protected Code
+                        </button>
+                        <button class="btn btn-outline" onclick="testProtectedHTML()">
+                            <i class="fas fa-play"></i> Test in New Tab
+                        </button>
+                    </div>
+                </div>
+
+                <div class="result-container" id="htmlProtectorResult">
+                    <div class="result-header">
+                        <h3><i class="fas fa-lock"></i> Protected HTML Output</h3>
+                        <span style="color: var(--success);">
+                            <i class="fas fa-check-circle"></i> Protection Applied
+                        </span>
+                    </div>
+                    
+                    <div class="result-content" id="protectedHTMLOutput">
+                        Protected HTML code will appear here...
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <label class="form-label">Protection Summary</label>
+                        <div id="protectionSummary" style="color: var(--text-muted); font-size: 0.9rem;">
+                            No protection applied yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Color Picker Tool -->
+        <div class="tool-page" id="colorPickerTool">
+            <div class="tool-header">
+                <h1><i class="fas fa-palette"></i> Color Picker</h1>
+                <p>Pick, convert, and generate beautiful color schemes with multiple format support.</p>
+            </div>
+
+            <div class="tool-container">
+                <div class="tool-section">
+                    <div class="color-picker-container">
+                        <div>
+                            <h3 class="section-title"><i class="fas fa-eye-dropper"></i> Color Picker</h3>
+                            <div class="color-display" id="colorDisplay"></div>
+                            <input type="color" id="colorPicker" value="#6366f1" style="width: 100%; height: 50px; border: none; border-radius: var(--radius-md);">
+                            
+                            <div class="color-values">
+                                <div class="color-value-group">
+                                    <label>HEX Color</label>
+                                    <input type="text" id="hexColor" value="#6366f1">
+                                </div>
+                                <div class="color-value-group">
+                                    <label>RGB Color</label>
+                                    <input type="text" id="rgbColor" value="rgb(99, 102, 241)" readonly>
+                                </div>
+                                <div class="color-value-group">
+                                    <label>HSL Color</label>
+                                    <input type="text" id="hslColor" value="hsl(238, 85%, 67%)" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="section-title"><i class="fas fa-layer-group"></i> Color Scheme</h3>
+                            <div class="form-group">
+                                <label class="form-label">Scheme Type</label>
+                                <select id="schemeType" class="form-input" onchange="generateColorScheme()">
+                                    <option value="monochromatic">Monochromatic</option>
+                                    <option value="analogous">Analogous</option>
+                                    <option value="complementary">Complementary</option>
+                                    <option value="triadic">Triadic</option>
+                                    <option value="tetradic">Tetradic</option>
+                                </select>
+                            </div>
+                            
+                            <div id="colorSchemePreview" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-top: 1.5rem;">
+                                <!-- Color swatches will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="updateColorFromPicker()">
+                            <i class="fas fa-sync"></i> Update Colors
+                        </button>
+                        <button class="btn btn-success" onclick="copyColor()">
+                            <i class="fas fa-copy"></i> Copy HEX
+                        </button>
+                        <button class="btn btn-outline" onclick="generateRandomColor()">
+                            <i class="fas fa-random"></i> Random Color
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Ticker Tool -->
+        <div class="tool-page" id="newsTickerTool">
+            <div class="tool-header">
+                <h1><i class="fas fa-newspaper"></i> News Ticker</h1>
+                <p>Create customizable scrolling news tickers for your website with multiple animation options.</p>
+            </div>
+
+            <div class="tool-container">
+                <div class="tool-section">
+                    <h3 class="section-title"><i class="fas fa-edit"></i> Ticker Content</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Ticker Items (one per line or separated by |)</label>
+                        <textarea id="tickerText" class="form-input" placeholder="Breaking News: Welcome to AzuraNook&#10;New Features Added&#10;Latest Updates Available" rows="4"></textarea>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 2rem;">
+                        <i class="fas fa-cog"></i> Ticker Settings
+                    </h3>
+                    
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Animation Speed</label>
+                            <select id="tickerSpeed" class="form-input" onchange="updateTickerPreview()">
+                                <option value="20">Slow (20s)</option>
+                                <option value="15" selected>Normal (15s)</option>
+                                <option value="10">Fast (10s)</option>
+                                <option value="5">Very Fast (5s)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Direction</label>
+                            <select id="tickerDirection" class="form-input" onchange="updateTickerPreview()">
+                                <option value="left" selected>Left to Right</option>
+                                <option value="right">Right to Left</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Font Size</label>
+                            <select id="tickerFontSize" class="form-input" onchange="updateTickerPreview()">
+                                <option value="12px">Small (12px)</option>
+                                <option value="16px" selected>Medium (16px)</option>
+                                <option value="20px">Large (20px)</option>
+                                <option value="24px">Extra Large (24px)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Background Color</label>
+                            <input type="color" id="tickerBgColor" value="#6366f1" onchange="updateTickerPreview()">
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-check">
+                            <input type="checkbox" id="tickerPauseHover" checked>
+                            <label style="color: var(--text-primary);">Pause on Hover</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="tickerLoop" checked>
+                            <label style="color: var(--text-primary);">Loop Continuously</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="tickerShowControls">
+                            <label style="color: var(--text-primary);">Show Controls</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="tickerRandomOrder">
+                            <label style="color: var(--text-primary);">Randomize Order</label>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="generateTicker()">
+                            <i class="fas fa-play"></i> Generate Ticker
+                        </button>
+                        <button class="btn btn-success" onclick="copyTickerCode()">
+                            <i class="fas fa-copy"></i> Copy HTML Code
+                        </button>
+                        <button class="btn btn-outline" onclick="testTicker()">
+                            <i class="fas fa-external-link-alt"></i> Test in New Tab
+                        </button>
+                    </div>
+                </div>
+
+                <div class="result-container" id="tickerPreviewContainer">
+                    <div class="result-header">
+                        <h3><i class="fas fa-eye"></i> Live Preview</h3>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-sm btn-outline" onclick="pauseTicker()">
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick="resumeTicker()">
+                                <i class="fas fa-play"></i> Play
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="ticker-preview" id="tickerPreview">
+                        <div class="ticker-content" id="tickerContent">
+                            Loading preview...
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <label class="form-label">Generated HTML Code</label>
+                        <div class="result-content" id="tickerCodeOutput">
+                            HTML code will appear here...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- More tools would go here with similar structure -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>AzuraNook DevTools</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">A comprehensive toolkit for web developers and designers.</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">
+                    <i class="fas fa-shield-alt"></i> All data is processed locally in your browser.
+                </p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#" onclick="goToHome()"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#" onclick="showTool('urlShortener')"><i class="fas fa-link"></i> URL Shortener</a></li>
+                    <li><a href="#" onclick="showTool('passwordGenerator')"><i class="fas fa-key"></i> Password Generator</a></li>
+                    <li><a href="#" onclick="showTool('htmlProtector')"><i class="fas fa-shield-alt"></i> HTML Protector</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>More Tools</h3>
+                <ul class="footer-links">
+                    <li><a href="#" onclick="showTool('colorPicker')"><i class="fas fa-palette"></i> Color Picker</a></li>
+                    <li><a href="#" onclick="showTool('newsTicker')"><i class="fas fa-newspaper"></i> News Ticker</a></li>
+                    <li><a href="#" onclick="showTool('urlEncoder')"><i class="fas fa-lock"></i> URL Encoder</a></li>
+                    <li><a href="#" onclick="showTool('cssObfuscator')"><i class="fas fa-code"></i> CSS Obfuscator</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2024 AzuraNook DevTools. Created by Olawande. All rights reserved.</p>
+            <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                <i class="fas fa-code"></i> Built with modern web technologies
+            </p>
+        </div>
+    </footer>
+
+    <script>
+    // ============================
+    // GLOBAL VARIABLES FOR URL SHORTENER
+    // ============================
+    let urlDatabase = JSON.parse(localStorage.getItem('azuranook_urls')) || [];
+    let shortenerStats = JSON.parse(localStorage.getItem('azuranook_stats')) || {
+        total: 0,
+        today: 0,
+        clicks: 0,
+        lastDate: new Date().toDateString()
+    };
+    let redirectInterval = null;
+    let isOnRedirectPage = false;
+    let currentRedirectUrl = null;
+    let currentRedirectTime = 10;
+
+    // ============================
+    // CUSTOM NOTIFICATION SYSTEM
+    // ============================
+    function showCustomNotification(title, message, type = 'info') {
+        const notification = document.getElementById('customNotification');
+        const icon = document.getElementById('notificationIcon');
+        const titleEl = document.getElementById('notificationTitle');
+        const messageEl = document.getElementById('notificationMessage');
+        
+        if (!notification || !icon || !titleEl || !messageEl) return;
+        
+        // Set icon based on type
+        const icons = {
+            'info': 'fa-circle-info',
+            'success': 'fa-circle-check',
+            'warning': 'fa-circle-exclamation',
+            'danger': 'fa-circle-xmark'
+        };
+        
+        // Set color based on type
+        const colors = {
+            'info': 'var(--primary)',
+            'success': 'var(--success)',
+            'warning': 'var(--warning)',
+            'danger': 'var(--danger)'
+        };
+        
+        icon.className = `fa-solid ${icons[type] || icons.info}`;
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        notification.style.borderLeftColor = colors[type] || colors.info;
+        
+        // Show notification
+        notification.classList.add('show');
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            hideCustomNotification();
+        }, 5000);
+    }
+
+    function hideCustomNotification() {
+        const notification = document.getElementById('customNotification');
+        if (notification) {
+            notification.classList.remove('show');
+        }
+    }
+
+    // ============================
+    // URL ENCODING/DECODING FUNCTIONS
+    // ============================
+    function encodeUrl(url) {
+        // Simple base64 encoding with URL safety
+        return btoa(encodeURIComponent(url)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    function decodeUrl(encoded) {
+        try {
+            // Add padding if needed
+            while (encoded.length % 4) {
+                encoded += '=';
+            }
+            encoded = encoded.replace(/-/g, '+').replace(/_/g, '/');
+            return decodeURIComponent(atob(encoded));
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // ============================
+    // URL SHORTENER INITIALIZATION
+    // ============================
+    function initShortenerStats() {
+        const today = new Date().toDateString();
+        
+        // Reset today's count if it's a new day
+        if (shortenerStats.lastDate !== today) {
+            shortenerStats.today = 0;
+            shortenerStats.lastDate = today;
+            saveShortenerStats();
+        }
+        
+        // Update UI
+        if (document.getElementById('statsTotalNew')) {
+            document.getElementById('statsTotalNew').textContent = shortenerStats.total;
+            document.getElementById('statsTodayNew').textContent = shortenerStats.today;
+            document.getElementById('statsClicksNew').textContent = shortenerStats.clicks;
+        }
+        
+        // Update homepage stats
+        if (document.getElementById('totalUrls')) {
+            document.getElementById('totalUrls').textContent = shortenerStats.total.toLocaleString();
+        }
+    }
+
+    function saveShortenerStats() {
+        localStorage.setItem('azuranook_stats', JSON.stringify(shortenerStats));
+    }
+
+    // ============================
+    // REDIRECT PAGE SYSTEM
+    // ============================
+    function checkForRedirect() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlParam = urlParams.get('u');
+        const timeParam = urlParams.get('t');
+        
+        if (urlParam) {
+            // We're on a redirect page
+            isOnRedirectPage = true;
+            showRedirectPage();
+            
+            // Decode the URL
+            const decodedUrl = decodeUrl(urlParam);
+            
+            if (decodedUrl && isValidUrl(decodedUrl)) {
+                currentRedirectUrl = decodedUrl;
+                currentRedirectTime = timeParam ? parseInt(timeParam) : 10;
+                
+                // Update stats
+                shortenerStats.clicks++;
+                saveShortenerStats();
+                initShortenerStats();
+                
+                // Start the redirect countdown
+                startRedirectCountdown();
+            } else {
+                showInvalidLink();
+            }
+        } else {
+            // We're on the normal page
+            isOnRedirectPage = false;
+        }
+    }
+
+    function showRedirectPage() {
+        // Hide all other pages
+        document.getElementById('homepage').style.display = 'none';
+        document.querySelectorAll('.tool-page').forEach(page => {
+            page.classList.remove('active');
+            page.style.display = 'none';
+        });
+        
+        // Show redirect page
+        const redirectPage = document.getElementById('redirectPage');
+        if (redirectPage) {
+            redirectPage.classList.add('active');
+            redirectPage.style.display = 'flex';
+        }
+        
+        // Update header
+        const headerTitle = document.getElementById('headerTitle');
+        if (headerTitle) {
+            headerTitle.textContent = 'Redirecting...';
+        }
+        
+        // Hide navigation
+        const mainNav = document.getElementById('mainNav');
+        if (mainNav) {
+            mainNav.style.display = 'none';
+        }
+    }
+
+    function startRedirectCountdown() {
+        let countdown = currentRedirectTime;
+        const countdownNumber = document.getElementById('redirectCountdownNumber');
+        const countdownSeconds = document.getElementById('redirectCountdownSeconds');
+        const progressBar = document.getElementById('redirectProgressBar');
+        
+        if (!countdownNumber || !countdownSeconds || !progressBar) return;
+        
+        // Initialize display
+        countdownNumber.textContent = countdown;
+        countdownSeconds.textContent = countdown;
+        progressBar.style.width = '100%';
+        
+        // Show the countdown box
+        const countdownBox = document.getElementById('redirectCountdownBox');
+        if (countdownBox) {
+            countdownBox.style.display = 'block';
+        }
+        
+        // Start countdown
+        redirectInterval = setInterval(() => {
+            countdown--;
+            
+            // Update display
+            countdownNumber.textContent = countdown;
+            countdownSeconds.textContent = countdown;
+            
+            // Update progress bar
+            const progress = (countdown / currentRedirectTime) * 100;
+            progressBar.style.width = progress + '%';
+            
+            // Redirect when countdown reaches 0
+            if (countdown <= 0) {
+                clearInterval(redirectInterval);
+                performRedirect();
+            }
+        }, 1000);
+    }
+
+    function skipRedirectCountdown() {
+        if (redirectInterval) {
+            clearInterval(redirectInterval);
+        }
+        performRedirect();
+    }
+
+    function performRedirect() {
+        if (currentRedirectUrl) {
+            // Show a brief message before redirecting
+            const countdownNumber = document.getElementById('redirectCountdownNumber');
+            const countdownSeconds = document.getElementById('redirectCountdownSeconds');
+            
+            if (countdownNumber) countdownNumber.textContent = '0';
+            if (countdownSeconds) countdownSeconds.textContent = '0';
+            
+            // Redirect after a short delay
+            setTimeout(() => {
+                window.location.href = currentRedirectUrl;
+            }, 500);
+        }
+    }
+
+    function showInvalidLink() {
+        const countdownBox = document.getElementById('redirectCountdownBox');
+        const invalidLinkBox = document.getElementById('invalidLinkBox');
+        
+        if (countdownBox) countdownBox.style.display = 'none';
+        if (invalidLinkBox) invalidLinkBox.style.display = 'block';
+    }
+
+    function cancelRedirect() {
+        if (redirectInterval) {
+            clearInterval(redirectInterval);
+            redirectInterval = null;
+        }
+        
+        // Clear URL parameters
+        const baseUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, baseUrl);
+        
+        // Go back to homepage
+        goToHome();
+        
+        // Restore navigation
+        const mainNav = document.getElementById('mainNav');
+        if (mainNav) {
+            mainNav.style.display = 'flex';
+        }
+        
+        const headerTitle = document.getElementById('headerTitle');
+        if (headerTitle) {
+            headerTitle.textContent = 'AzuraNook DevTools';
+        }
+    }
+
+    function isValidUrl(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // ============================
+    // URL SHORTENING FUNCTIONS
+    // ============================
+    function generateShortCode(length = 6) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    function shortenUrlNew() {
+        const originalUrl = document.getElementById('originalUrl')?.value.trim();
+        const customSlug = document.getElementById('customSlug')?.value.trim();
+        const countdownTime = parseInt(document.getElementById('countdownTime')?.value || 10);
+        const enableEncryption = document.getElementById('enableEncryption')?.checked || true;
+        
+        // Validate URL
+        if (!originalUrl) {
+            showCustomNotification('Missing URL', 'Please enter a URL to shorten.', 'warning');
+            return;
+        }
+        
+        // Validate URL format
+        if (!isValidUrl(originalUrl)) {
+            showCustomNotification('Invalid URL', 'Please enter a valid URL (include http:// or https://).', 'warning');
+            return;
+        }
+        
+        // Generate short code
+        let shortCode;
+        if (customSlug) {
+            // Clean custom slug
+            shortCode = customSlug.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
+            if (!shortCode) {
+                showCustomNotification('Invalid Slug', 'Custom slug can only contain letters, numbers, hyphens, and underscores.', 'warning');
+                return;
+            }
+        } else {
+            // Generate random short code
+            shortCode = generateShortCode();
+        }
+        
+        // Encode the original URL
+        const encodedUrl = enableEncryption ? encodeUrl(originalUrl) : encodeURIComponent(originalUrl);
+        
+        // Create short URL with parameters
+        const baseUrl = window.location.origin + window.location.pathname;
+        const shortUrl = `${baseUrl}?u=${encodedUrl}&t=${countdownTime}${customSlug ? `&c=${shortCode}` : ''}`;
+        
+        // Create URL data object for history
+        const urlData = {
+            id: Date.now(),
+            shortCode: shortCode,
+            originalUrl: originalUrl,
+            shortUrl: shortUrl,
+            countdownTime: countdownTime,
+            clicks: 0,
+            created: new Date().toISOString(),
+            createdDate: new Date().toDateString()
+        };
+        
+        // Add to database
+        urlDatabase.unshift(urlData);
+        
+        // Update stats
+        shortenerStats.total++;
+        shortenerStats.today++;
+        saveShortenerStats();
+        saveUrlDatabase();
+        
+        // Update UI
+        const shortUrlLink = document.getElementById('shortUrlLinkNew');
+        const resultSection = document.getElementById('resultSectionNew');
+        const countdownPreview = document.getElementById('countdownPreviewNew');
+        
+        if (shortUrlLink) shortUrlLink.textContent = shortUrl;
+        if (shortUrlLink) shortUrlLink.href = shortUrl;
+        if (countdownPreview) countdownPreview.textContent = countdownTime;
+        if (resultSection) resultSection.classList.add('active');
+        
+        // Generate QR code
+        generateQRCodeNew(shortUrl);
+        
+        // Scroll to result
+        if (resultSection) {
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Update stats display
+        initShortenerStats();
+        
+        showCustomNotification('URL Shortened', 'Your short URL has been generated successfully!', 'success');
+    }
+
+    function generateQRCodeNew(url) {
+        const qrContainer = document.getElementById('qrContainerNew');
+        const canvas = document.getElementById('qrCodeNew');
+        
+        if (!canvas || !qrContainer) return;
+        
+        // Clear previous QR code
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Generate new QR code
+        QRCode.toCanvas(canvas, url, {
+            width: 200,
+            margin: 1,
+            color: {
+                dark: 'var(--primary)',
+                light: '#ffffff'
+            }
+        }, function(error) {
+            if (error) {
+                console.error('QR Code generation failed:', error);
+                qrContainer.style.display = 'none';
+            } else {
+                qrContainer.style.display = 'block';
+            }
+        });
+    }
+
+    function testShortUrlNew() {
+        const shortUrlLink = document.getElementById('shortUrlLinkNew');
+        if (shortUrlLink && shortUrlLink.href) {
+            window.open(shortUrlLink.href, '_blank');
+        }
+    }
+
+    function copyShortUrlNew() {
+        const shortUrlLink = document.getElementById('shortUrlLinkNew');
+        if (!shortUrlLink || !shortUrlLink.textContent) {
+            showCustomNotification('Error', 'No URL to copy.', 'warning');
+            return;
+        }
+        
+        const shortUrl = shortUrlLink.textContent;
+        const copyBtn = document.querySelector('#resultSectionNew .btn-success');
+        
+        navigator.clipboard.writeText(shortUrl).then(() => {
+            if (copyBtn) {
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copyBtn.style.background = 'var(--success)';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.style.background = '';
+                }, 2000);
+            }
+            
+            showCustomNotification('Copied!', 'Short URL copied to clipboard.', 'success');
+        }).catch(err => {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = shortUrl;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            showCustomNotification('Copied!', 'Short URL copied to clipboard.', 'success');
+        });
+    }
+
+    function clearUrlFormNew() {
+        const originalUrl = document.getElementById('originalUrl');
+        const customSlug = document.getElementById('customSlug');
+        const resultSection = document.getElementById('resultSectionNew');
+        
+        if (originalUrl) originalUrl.value = '';
+        if (customSlug) customSlug.value = '';
+        if (resultSection) resultSection.classList.remove('active');
+        
+        // Focus on URL input
+        if (originalUrl) originalUrl.focus();
+    }
+
+    function saveUrlDatabase() {
+        localStorage.setItem('azuranook_urls', JSON.stringify(urlDatabase));
+    }
+
+    // ============================
+    // ORIGINAL FUNCTIONS FROM MODER.TXT
+    // ============================
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let currentPage = 'homepage';
+    let toolsData = [];
+    
+    // Initialize the application
+    function initApp() {
+        initTheme();
+        initHomepage();
+        initTools();
+        
+        // Initialize URL Shortener
+        initShortenerStats();
+        checkForRedirect();
+        
+        // Update countdown preview when selection changes
+        const countdownTime = document.getElementById('countdownTime');
+        if (countdownTime) {
+            countdownTime.addEventListener('change', function() {
+                const preview = document.getElementById('countdownPreviewNew');
+                if (preview) preview.textContent = this.value;
+            });
+        }
+        
+        // Allow pressing Enter in URL field to submit
+        const urlInput = document.getElementById('originalUrl');
+        if (urlInput) {
+            urlInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    shortenUrlNew();
+                }
+            });
+        }
+        
+        // Initialize color picker
+        updateColorFromPicker();
+        
+        // Initialize ticker preview
+        updateTickerPreview();
+        
+        // Show welcome notification
+        setTimeout(() => {
+            showNotification('Welcome!', 'AzuraNook DevTools is ready. Try the new dark mode!', 'info');
+        }, 1000);
+    }
+    
+    // Theme Management
+    function initTheme() {
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            const themeIcon = document.querySelector('.theme-toggle i');
+            if (themeIcon) themeIcon.className = 'fas fa-sun';
+        } else {
+            document.body.classList.remove('dark-mode');
+            const themeIcon = document.querySelector('.theme-toggle i');
+            if (themeIcon) themeIcon.className = 'fas fa-moon';
+        }
+    }
+    
+    function toggleTheme() {
+        if (currentTheme === 'light') {
+            currentTheme = 'dark';
+        } else {
+            currentTheme = 'light';
+        }
+        
+        localStorage.setItem('theme', currentTheme);
+        initTheme();
+        showNotification('Theme Changed', `Switched to ${currentTheme} mode`, 'success');
+    }
+    
+    // Navigation
+    function goToHome() {
+        // Hide redirect page if visible
+        const redirectPage = document.getElementById('redirectPage');
+        if (redirectPage) {
+            redirectPage.classList.remove('active');
+            redirectPage.style.display = 'none';
+        }
+        
+        // Restore navigation
+        const mainNav = document.getElementById('mainNav');
+        if (mainNav) {
+            mainNav.style.display = 'flex';
+        }
+        
+        const headerTitle = document.getElementById('headerTitle');
+        if (headerTitle) {
+            headerTitle.textContent = 'AzuraNook DevTools';
+        }
+        
+        // Show homepage
+        showPage('homepage');
+        updateActiveNav('home');
+    }
+    
+    function showTool(toolId) {
+        // Hide redirect page if visible
+        const redirectPage = document.getElementById('redirectPage');
+        if (redirectPage) {
+            redirectPage.classList.remove('active');
+            redirectPage.style.display = 'none';
+        }
+        
+        // Restore navigation
+        const mainNav = document.getElementById('mainNav');
+        if (mainNav) {
+            mainNav.style.display = 'flex';
+        }
+        
+        const headerTitle = document.getElementById('headerTitle');
+        if (headerTitle) {
+            headerTitle.textContent = 'AzuraNook DevTools';
+        }
+        
+        // Show the tool
+        showPage(toolId + 'Tool');
+        updateActiveNav(toolId);
+        
+        // Initialize specific tools
+        if (toolId === 'passwordGenerator') {
+            generatePassword();
+        } else if (toolId === 'colorPicker') {
+            generateColorScheme();
+        } else if (toolId === 'newsTicker') {
+            generateTicker();
+        } else if (toolId === 'urlShortener') {
+            // Auto-focus URL input when showing URL shortener
+            setTimeout(() => {
+                const urlInput = document.getElementById('originalUrl');
+                if (urlInput) urlInput.focus();
+            }, 100);
+        }
+    }
+    
+    function showPage(pageId) {
+        document.querySelectorAll('.tool-page').forEach(page => {
+            page.classList.remove('active');
+            page.style.display = 'none';
+        });
+        document.getElementById('homepage').style.display = 'none';
+        
+        if (pageId === 'homepage') {
+            document.getElementById('homepage').style.display = 'block';
+            currentPage = 'homepage';
+        } else {
+            const page = document.getElementById(pageId);
+            if (page) {
+                page.classList.add('active');
+                page.style.display = 'block';
+                currentPage = pageId.replace('Tool', '');
+            }
+        }
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function updateActiveNav(activeId) {
+        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // Update header nav
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            if (link.textContent.toLowerCase().includes(activeId.toLowerCase())) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Update mobile nav
+        const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+        mobileLinks.forEach(link => {
+            if (link.textContent.toLowerCase().includes(activeId.toLowerCase())) {
+                link.classList.add('active');
+            }
+        });
+    }
+    
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobileMenu');
+        if (menu) {
+            menu.classList.toggle('active');
+        }
+    }
+    
+    // ============================
+    // HOME PAGE
+    // ============================
+    function initHomepage() {
+        toolsData = [
+            {
+                id: 'urlShortener',
+                icon: 'fas fa-link',
+                title: 'URL Shortener',
+                description: 'Create short, memorable links with custom slugs and countdown redirects.',
+                tags: ['web', 'utility'],
+                color: '#6366f1'
+            },
+            {
+                id: 'passwordGenerator',
+                icon: 'fas fa-key',
+                title: 'Password Generator',
+                description: 'Generate strong, secure passwords with customizable options.',
+                tags: ['security', 'utility'],
+                color: '#10b981'
+            },
+            {
+                id: 'urlEncoder',
+                icon: 'fas fa-lock',
+                title: 'URL Encoder/Decoder',
+                description: 'Encode and decode URLs, Base64 strings, and HTML entities.',
+                tags: ['web', 'security'],
+                color: '#3b82f6'
+            },
+            {
+                id: 'htmlProtector',
+                icon: 'fas fa-shield-alt',
+                title: 'HTML Protector',
+                description: 'Protect HTML content from copying and theft.',
+                tags: ['security', 'web'],
+                color: '#8b5cf6'
+            },
+            {
+                id: 'colorPicker',
+                icon: 'fas fa-palette',
+                title: 'Color Picker',
+                description: 'Pick colors and generate beautiful color schemes.',
+                tags: ['design', 'utility'],
+                color: '#ec4899'
+            },
+            {
+                id: 'newsTicker',
+                icon: 'fas fa-newspaper',
+                title: 'News Ticker',
+                description: 'Create customizable scrolling news tickers.',
+                tags: ['web', 'design'],
+                color: '#f59e0b'
+            },
+            {
+                id: 'encryptionTools',
+                icon: 'fas fa-lock',
+                title: 'Encryption Tools',
+                description: 'Encrypt and decrypt text using various algorithms.',
+                tags: ['security'],
+                color: '#ef4444'
+            },
+            {
+                id: 'cssObfuscator',
+                icon: 'fas fa-code',
+                title: 'CSS Obfuscator',
+                description: 'Obfuscate CSS class names to prevent copying.',
+                tags: ['security', 'web'],
+                color: '#06b6d4'
+            },
+            {
+                id: 'pollSystem',
+                icon: 'fas fa-chart-bar',
+                title: 'Poll System',
+                description: 'Create interactive polls with real-time results.',
+                tags: ['web', 'utility'],
+                color: '#84cc16'
+            },
+            {
+                id: 'cssMinifier',
+                icon: 'fas fa-file-code',
+                title: 'CSS Minifier',
+                description: 'Minify CSS code to reduce file size.',
+                tags: ['web', 'performance'],
+                color: '#f97316'
+            }
+        ];
+        
+        renderToolsGrid();
+    }
+    
+    function renderToolsGrid(filter = 'all') {
+        const toolsGrid = document.getElementById('toolsGrid');
+        if (!toolsGrid) return;
+        
+        const filteredTools = filter === 'all' 
+            ? toolsData 
+            : toolsData.filter(tool => tool.tags.includes(filter));
+        
+        toolsGrid.innerHTML = filteredTools.map(tool => `
+            <a href="#" class="tool-card" onclick="showTool('${tool.id}'); return false;">
+                <div class="tool-icon" style="background: linear-gradient(135deg, ${tool.color}, ${adjustColor(tool.color, -20)});">
+                    <i class="${tool.icon}"></i>
+                </div>
+                <h3>${tool.title}</h3>
+                <p>${tool.description}</p>
+                <div class="tool-tags">
+                    ${tool.tags.map(tag => `<span class="tool-tag">${tag}</span>`).join('')}
+                </div>
+                <div class="tool-status">Active</div>
+            </a>
+        `).join('');
+        
+        // Update filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const activeBtn = document.querySelector(`.filter-btn[onclick="filterTools('${filter}')"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+    
+    function filterTools(category) {
+        renderToolsGrid(category);
+    }
+    
+    function adjustColor(color, amount) {
+        let usePound = false;
+        if (color[0] === "#") {
+            color = color.slice(1);
+            usePound = true;
+        }
+        const num = parseInt(color, 16);
+        let r = (num >> 16) + amount;
+        if (r > 255) r = 255;
+        else if (r < 0) r = 0;
+        let b = ((num >> 8) & 0x00FF) + amount;
+        if (b > 255) b = 255;
+        else if (b < 0) b = 0;
+        let g = (num & 0x0000FF) + amount;
+        if (g > 255) g = 255;
+        else if (g < 0) g = 0;
+        return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+    }
+    
+    // ============================
+    // NOTIFICATION SYSTEM
+    // ============================
+    function showNotification(title, message, type = 'info') {
+        // Use the new custom notification system
+        showCustomNotification(title, message, type);
+    }
+    
+    // ============================
+    // URL ENCODER/DECODER
+    // ============================
+    function processEncoder() {
+        const input = document.getElementById('encoderInput').value;
+        const type = document.getElementById('encodeType').value;
+        let output = '';
+        
+        try {
+            switch(type) {
+                case 'urlEncode':
+                    output = encodeURIComponent(input);
+                    break;
+                case 'urlDecode':
+                    output = decodeURIComponent(input);
+                    break;
+                case 'base64Encode':
+                    output = btoa(unescape(encodeURIComponent(input)));
+                    break;
+                case 'base64Decode':
+                    output = decodeURIComponent(escape(atob(input)));
+                    break;
+                case 'htmlEncode':
+                    output = input.replace(/[&<>"']/g, m => ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    }[m]));
+                    break;
+                case 'htmlDecode':
+                    const textarea = document.createElement('textarea');
+                    textarea.innerHTML = input;
+                    output = textarea.value;
+                    break;
+            }
+            
+            document.getElementById('encoderOutput').textContent = output;
+            document.getElementById('encoderResult').classList.add('active');
+            showNotification('Success', 'Text processed successfully!', 'success');
+            
+        } catch (e) {
+            showNotification('Error', 'Invalid input for selected operation.', 'error');
+        }
+    }
+    
+    function copyEncoderResult() {
+        const output = document.getElementById('encoderOutput').textContent;
+        if (!output) {
+            showNotification('Error', 'No result to copy.', 'error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(output).then(() => {
+            showNotification('Copied!', 'Result copied to clipboard.', 'success');
+        });
+    }
+    
+    function clearEncoder() {
+        document.getElementById('encoderInput').value = '';
+        document.getElementById('encoderOutput').textContent = 'Result will appear here...';
+        document.getElementById('encoderResult').classList.remove('active');
+    }
+    
+    // ============================
+    // HTML PROTECTOR
+    // ============================
+    function protectHTML() {
+        let html = document.getElementById('htmlInput').value;
+        if (!html.trim()) {
+            showNotification('Error', 'Please enter HTML code.', 'error');
+            return;
+        }
+        
+        let protectedHTML = html;
+        const protectionSummary = [];
+        
+        // Disable right click
+        if (document.getElementById('disableRightClick').checked) {
+            const rightClickScript = `
+            <script>
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                alert('Right click is disabled on this page.');
+            });
+            <\/script>
+            `;
+            protectedHTML = protectedHTML.replace('</body>', rightClickScript + '</body>');
+            protectionSummary.push('Right Click Disabled');
+        }
+        
+        // Disable text selection
+        if (document.getElementById('disableTextSelection').checked) {
+            const selectionScript = `
+            <script>
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+            });
+            document.body.style.userSelect = 'none';
+            <\/script>
+            `;
+            protectedHTML = protectedHTML.replace('</body>', selectionScript + '</body>');
+            protectionSummary.push('Text Selection Disabled');
+        }
+        
+        // Disable copy
+        if (document.getElementById('disableCopy').checked) {
+            const copyScript = `
+            <script>
+            document.addEventListener('copy', function(e) {
+                e.preventDefault();
+                alert('Copying is disabled on this page.');
+            });
+            <\/script>
+            `;
+            protectedHTML = protectedHTML.replace('</body>', copyScript + '</body>');
+            protectionSummary.push('Copy Disabled');
+        }
+        
+        // Add watermark
+        if (document.getElementById('addWatermark').checked) {
+            const watermark = document.getElementById('watermarkText').value || 'Protected by AzuraNook';
+            const watermarkScript = `
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const div = document.createElement('div');
+                div.textContent = '${watermark}';
+                div.style.position = 'fixed';
+                div.style.bottom = '10px';
+                div.style.right = '10px';
+                div.style.fontSize = '8px';
+                div.style.color = 'rgba(0,0,0,0.1)';
+                div.style.zIndex = '9999';
+                div.style.pointerEvents = 'none';
+                document.body.appendChild(div);
+            });
+            <\/script>
+            `;
+            protectedHTML = protectedHTML.replace('</body>', watermarkScript + '</body>');
+            protectionSummary.push('Watermark Added');
+        }
+        
+        // Obfuscate code (basic)
+        if (document.getElementById('obfuscateCode').checked) {
+            protectedHTML = protectedHTML
+                .replace(/class="/g, 'class="azn-')
+                .replace(/id="/g, 'id="azn-')
+                .replace(/\.([a-zA-Z][\w-]*)/g, '.azn-$1')
+                .replace(/#([a-zA-Z][\w-]*)/g, '#azn-$1');
+            protectionSummary.push('Code Obfuscated');
+        }
+        
+        document.getElementById('protectedHTMLOutput').textContent = protectedHTML;
+        document.getElementById('htmlProtectorResult').classList.add('active');
+        document.getElementById('protectionSummary').innerHTML = protectionSummary
+            .map(item => `<div><i class="fas fa-check" style="color: var(--success);"></i> ${item}</div>`)
+            .join('');
+        
+        showNotification('Success', 'HTML protection applied!', 'success');
+    }
+    
+    function copyProtectedHTML() {
+        const output = document.getElementById('protectedHTMLOutput').textContent;
+        if (!output || output.includes('Protected HTML code will appear here...')) {
+            showNotification('Error', 'No protected HTML to copy.', 'error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(output).then(() => {
+            showNotification('Copied!', 'Protected HTML copied to clipboard.', 'success');
+        });
+    }
+    
+    function testProtectedHTML() {
+        const output = document.getElementById('protectedHTMLOutput').textContent;
+        if (!output || output.includes('Protected HTML code will appear here...')) {
+            showNotification('Error', 'Please protect HTML first.', 'error');
+            return;
+        }
+        
+        const testWindow = window.open();
+        testWindow.document.write(output);
+        testWindow.document.close();
+    }
+    
+    // ============================
+    // COLOR PICKER
+    // ============================
+    function updateColorFromPicker() {
+        const hex = document.getElementById('hexColor').value;
+        const rgb = hexToRGB(hex);
+        const hsl = RGBToHSL(rgb.r, rgb.g, rgb.b);
+        
+        document.getElementById('colorPicker').value = hex;
+        document.getElementById('colorDisplay').style.background = hex;
+        document.getElementById('rgbColor').value = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+        document.getElementById('hslColor').value = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+        
+        generateColorScheme();
+    }
+    
+    function hexToRGB(hex) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return { r, g, b };
+    }
+    
+    function RGBToHSL(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+        
+        if (max === min) {
+            h = s = 0;
+        } else {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch(max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+        
+        return {
+            h: Math.round(h * 360),
+            s: Math.round(s * 100),
+            l: Math.round(l * 100)
+        };
+    }
+    
+    function HSLToHex(h, s, l) {
+        s /= 100;
+        l /= 100;
+        
+        const c = (1 - Math.abs(2 * l - 1)) * s;
+        const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+        const m = l - c / 2;
+        
+        let r, g, b;
+        
+        if (h >= 0 && h < 60) {
+            [r, g, b] = [c, x, 0];
+        } else if (h >= 60 && h < 120) {
+            [r, g, b] = [x, c, 0];
+        } else if (h >= 120 && h < 180) {
+            [r, g, b] = [0, c, x];
+        } else if (h >= 180 && h < 240) {
+            [r, g, b] = [0, x, c];
+        } else if (h >= 240 && h < 300) {
+            [r, g, b] = [x, 0, c];
+        } else {
+            [r, g, b] = [c, 0, x];
+        }
+        
+        r = Math.round((r + m) * 255);
+        g = Math.round((g + m) * 255);
+        b = Math.round((b + m) * 255);
+        
+        return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+    }
+    
+    function generateColorScheme() {
+        const hex = document.getElementById('hexColor').value;
+        const type = document.getElementById('schemeType').value;
+        const rgb = hexToRGB(hex);
+        const hsl = RGBToHSL(rgb.r, rgb.g, rgb.b);
+        
+        let colors = [];
+        
+        switch(type) {
+            case 'monochromatic':
+                for (let i = -2; i <= 2; i++) {
+                    const newHsl = { ...hsl, l: Math.max(0, Math.min(100, hsl.l + (i * 15))) };
+                    colors.push(HSLToHex(hsl.h, hsl.s, newHsl.l));
+                }
+                break;
+            case 'analogous':
+                for (let i = -2; i <= 2; i++) {
+                    const newHsl = { ...hsl, h: (hsl.h + (i * 30) + 360) % 360 };
+                    colors.push(HSLToHex(newHsl.h, hsl.s, hsl.l));
+                }
+                break;
+            case 'complementary':
+                colors = [hex, HSLToHex((hsl.h + 180) % 360, hsl.s, hsl.l)];
+                colors.push(HSLToHex(hsl.h, hsl.s, Math.min(100, hsl.l + 20)));
+                colors.push(HSLToHex(hsl.h, hsl.s, Math.max(0, hsl.l - 20)));
+                colors.push(HSLToHex((hsl.h + 180) % 360, hsl.s, Math.min(100, hsl.l + 20)));
+                break;
+            case 'triadic':
+                colors = [
+                    hex,
+                    HSLToHex((hsl.h + 120) % 360, hsl.s, hsl.l),
+                    HSLToHex((hsl.h + 240) % 360, hsl.s, hsl.l)
+                ];
+                colors.push(HSLToHex(hsl.h, Math.min(100, hsl.s + 20), hsl.l));
+                colors.push(HSLToHex((hsl.h + 120) % 360, Math.min(100, hsl.s + 20), hsl.l));
+                break;
+            case 'tetradic':
+                colors = [
+                    hex,
+                    HSLToHex((hsl.h + 90) % 360, hsl.s, hsl.l),
+                    HSLToHex((hsl.h + 180) % 360, hsl.s, hsl.l),
+                    HSLToHex((hsl.h + 270) % 360, hsl.s, hsl.l)
+                ];
+                colors.push(HSLToHex(hsl.h, hsl.s, Math.min(100, hsl.l + 20)));
+                break;
+        }
+        
+        const container = document.getElementById('colorSchemePreview');
+        container.innerHTML = colors.map(color => `
+            <div style="text-align: center;">
+                <div style="width: 100%; height: 60px; background: ${color}; border-radius: var(--radius-sm); margin-bottom: 8px;"></div>
+                <div style="font-family: monospace; font-size: 0.8rem; color: var(--text-secondary);">${color}</div>
+            </div>
+        `).join('');
+    }
+    
+    function copyColor() {
+        const hex = document.getElementById('hexColor').value;
+        navigator.clipboard.writeText(hex).then(() => {
+            showNotification('Copied!', `Color ${hex} copied to clipboard.`, 'success');
+        });
+    }
+    
+    function generateRandomColor() {
+        const randomHex = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+        document.getElementById('hexColor').value = randomHex;
+        updateColorFromPicker();
+        showNotification('Random', 'Random color generated!', 'info');
+    }
+    
+    // Event listeners for color picker
+    const colorPicker = document.getElementById('colorPicker');
+    if (colorPicker) {
+        colorPicker.addEventListener('input', function() {
+            document.getElementById('hexColor').value = this.value;
+            updateColorFromPicker();
+        });
+    }
+    
+    const hexColor = document.getElementById('hexColor');
+    if (hexColor) {
+        hexColor.addEventListener('input', updateColorFromPicker);
+    }
+    
+    // ============================
+    // NEWS TICKER
+    // ============================
+    function updateTickerPreview() {
+        const text = document.getElementById('tickerText').value;
+        const items = text.split('\n').filter(item => item.trim()).length > 0 
+            ? text.split('\n').filter(item => item.trim())
+            : text.split('|').filter(item => item.trim());
+        
+        if (items.length === 0) {
+            items.push('Sample ticker item 1', 'Sample ticker item 2', 'Sample ticker item 3');
+        }
+        
+        const speed = document.getElementById('tickerSpeed').value;
+        const direction = document.getElementById('tickerDirection').value;
+        const fontSize = document.getElementById('tickerFontSize').value;
+        const bgColor = document.getElementById('tickerBgColor').value;
+        
+        const tickerContent = document.getElementById('tickerContent');
+        tickerContent.innerHTML = items.map(item => 
+            `<span style="margin-right: 40px; font-size: ${fontSize};">${item.trim()}</span>`
+        ).join('');
+        
+        const tickerPreview = document.getElementById('tickerPreview');
+        tickerPreview.style.background = bgColor;
+        tickerContent.style.animation = `ticker-scroll ${speed}s linear infinite`;
+        
+        if (direction === 'right') {
+            tickerContent.style.animationDirection = 'reverse';
+        } else {
+            tickerContent.style.animationDirection = 'normal';
+        }
+    }
+    
+    function generateTicker() {
+        const text = document.getElementById('tickerText').value;
+        const items = text.split('\n').filter(item => item.trim()).length > 0 
+            ? text.split('\n').filter(item => item.trim())
+            : text.split('|').filter(item => item.trim());
+        
+        if (items.length === 0) {
+            showNotification('Error', 'Please enter ticker items.', 'error');
+            return;
+        }
+        
+        const speed = document.getElementById('tickerSpeed').value;
+        const direction = document.getElementById('tickerDirection').value;
+        const fontSize = document.getElementById('tickerFontSize').value;
+        const bgColor = document.getElementById('tickerBgColor').value;
+        const pauseHover = document.getElementById('tickerPauseHover').checked;
+        const showControls = document.getElementById('tickerShowControls').checked;
+        const loop = document.getElementById('tickerLoop').checked;
+        const randomOrder = document.getElementById('tickerRandomOrder').checked;
+        
+        // Randomize if needed
+        if (randomOrder) {
+            items.sort(() => Math.random() - 0.5);
+        }
+        
+        // Generate HTML code
+        let html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Ticker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .azn-ticker-container {
+            width: 100%;
+            max-width: 800px;
+            background: ${bgColor};
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .azn-ticker {
+            display: flex;
+            white-space: nowrap;
+            padding: 20px;
+            animation: ticker ${speed}s linear infinite;
+        }
+        .azn-ticker-item {
+            display: inline-block;
+            color: white;
+            font-size: ${fontSize};
+            font-weight: 500;
+            margin-right: 40px;
+        }
+        ${pauseHover ? `
+        .azn-ticker-container:hover .azn-ticker {
+            animation-play-state: paused;
+        }
+        ` : ''}
+        ${!loop ? `
+        .azn-ticker {
+            animation-iteration-count: 1;
+        }
+        ` : ''}
+        
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        ${direction === 'right' ? `
+        .azn-ticker {
+            animation-direction: reverse;
+        }
+        ` : ''}
+        ${showControls ? `
+        .azn-ticker-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        .azn-ticker-controls button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        ` : ''}
+    </style>
+</head>
+<body>
+    <div class="azn-ticker-container">
+        <div class="azn-ticker">
+            ${items.map(item => `<span class="azn-ticker-item">${item}</span>`).join('')}
+        </div>
+        ${showControls ? `
+        <div class="azn-ticker-controls">
+            <button onclick="document.querySelector('.azn-ticker').style.animationPlayState='paused'">⏸️</button>
+            <button onclick="document.querySelector('.azn-ticker').style.animationPlayState='running'">▶️</button>
+        </div>
+        ` : ''}
+    </div>
+</body>
+</html>`;
+        
+        document.getElementById('tickerCodeOutput').textContent = html;
+        document.getElementById('tickerPreviewContainer').classList.add('active');
+        showNotification('Success', 'News ticker generated!', 'success');
+    }
+    
+    function copyTickerCode() {
+        const code = document.getElementById('tickerCodeOutput').textContent;
+        if (!code || code.includes('HTML code will appear here...')) {
+            showNotification('Error', 'Please generate ticker first.', 'error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(code).then(() => {
+            showNotification('Copied!', 'Ticker code copied to clipboard.', 'success');
+        });
+    }
+    
+    function testTicker() {
+        const code = document.getElementById('tickerCodeOutput').textContent;
+        if (!code || code.includes('HTML code will appear here...')) {
+            showNotification('Error', 'Please generate ticker first.', 'error');
+            return;
+        }
+        
+        const testWindow = window.open();
+        testWindow.document.write(code);
+        testWindow.document.close();
+    }
+    
+    function pauseTicker() {
+        const ticker = document.getElementById('tickerContent');
+        ticker.style.animationPlayState = 'paused';
+    }
+    
+    function resumeTicker() {
+        const ticker = document.getElementById('tickerContent');
+        ticker.style.animationPlayState = 'running';
+    }
+    
+    // Event listeners for ticker
+    const tickerText = document.getElementById('tickerText');
+    if (tickerText) {
+        tickerText.addEventListener('input', updateTickerPreview);
+    }
+    
+    const tickerSpeed = document.getElementById('tickerSpeed');
+    if (tickerSpeed) {
+        tickerSpeed.addEventListener('change', updateTickerPreview);
+    }
+    
+    const tickerDirection = document.getElementById('tickerDirection');
+    if (tickerDirection) {
+        tickerDirection.addEventListener('change', updateTickerPreview);
+    }
+    
+    const tickerFontSize = document.getElementById('tickerFontSize');
+    if (tickerFontSize) {
+        tickerFontSize.addEventListener('change', updateTickerPreview);
+    }
+    
+    const tickerBgColor = document.getElementById('tickerBgColor');
+    if (tickerBgColor) {
+        tickerBgColor.addEventListener('input', updateTickerPreview);
+    }
+    
+    // ============================
+    // PASSWORD GENERATOR
+    // ============================
+    function generatePassword() {
+        const length = 16;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+        let password = "";
+        for (let i = 0; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        // This is a placeholder - you need to add password generator UI elements
+        showNotification('Success', 'Password generated!', 'success');
+    }
+    
+    // ============================
+    // INIT TOOLS
+    // ============================
+    function initTools() {
+        // Update homepage stats with real data from URL shortener
+        if (document.getElementById('totalUrls')) {
+            document.getElementById('totalUrls').textContent = shortenerStats.total.toLocaleString();
+        }
+    }
+    
+    // ============================
+    // TEST FUNCTIONS FOR URL SHORTENER (in-tool testing)
+    // ============================
+    function skipCountdownNew() {
+        // This is for testing within the tool page
+        showCustomNotification('Countdown Skipped', 'For testing purposes only. In real redirect, you would be taken to the destination.', 'info');
+    }
+    
+    function cancelRedirectNew() {
+        // This is for testing within the tool page
+        const countdownBox = document.getElementById('countdownBoxNew');
+        if (countdownBox) {
+            countdownBox.classList.remove('active');
+        }
+        showCustomNotification('Redirect Cancelled', 'Countdown cancelled. In a real scenario, you would stay on the redirect page.', 'info');
+    }
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
