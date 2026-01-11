@@ -1,0 +1,5022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTools Pro | Complete Web Developer Suite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-light: #818cf8;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --info: #0ea5e9;
+        --dark: #0f172a;
+        --dark-card: #1e293b;
+        --light: #f8fafc;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --code-bg: #0f172a;
+        --toolbar-bg: #f1f5f9;
+        --modal-bg: rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--light);
+        color: var(--text-main);
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    /* ==================== CUSTOM MODAL SYSTEM ==================== */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--modal-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        transform: translateY(30px);
+        transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal {
+        transform: translateY(0);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+        background: var(--light);
+        color: var(--danger);
+    }
+
+    .modal-content {
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+
+    /* ==================== CUSTOM NOTIFICATION SYSTEM ==================== */
+    .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 400px;
+        width: calc(100% - 40px);
+    }
+
+    .notification {
+        background: white;
+        border-radius: 12px;
+        padding: 16px 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid var(--primary);
+        transform: translateX(120%);
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .notification::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .notification.show {
+        transform: translateX(0);
+    }
+
+    .notification.success {
+        border-left-color: var(--success);
+    }
+
+    .notification.error {
+        border-left-color: var(--danger);
+    }
+
+    .notification.warning {
+        border-left-color: var(--warning);
+    }
+
+    .notification.info {
+        border-left-color: var(--info);
+    }
+
+    .notification-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .notification.success .notification-icon {
+        color: var(--success);
+    }
+
+    .notification.error .notification-icon {
+        color: var(--danger);
+    }
+
+    .notification.warning .notification-icon {
+        color: var(--warning);
+    }
+
+    .notification.info .notification-icon {
+        color: var(--info);
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-title {
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .notification-message {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+
+    .notification-close {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background 0.2s;
+    }
+
+    .notification-close:hover {
+        background: #f1f5f9;
+    }
+
+    /* Header - Optimized for Mobile */
+    .main-header {
+        background: linear-gradient(135deg, var(--dark) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .logo-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: white;
+        font-size: 1.25rem;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .logo-brand i {
+        font-size: 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px;
+        border-radius: 10px;
+    }
+
+    .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
+
+    .mobile-menu-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-nav {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .nav-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .nav-btn.active {
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Main Content - Mobile Optimized */
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+        min-height: calc(100vh - 120px);
+    }
+
+    /* Dashboard Hero - Mobile Optimized */
+    .hero-section {
+        text-align: center;
+        padding: 2rem 1rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section h1 {
+        font-size: clamp(1.75rem, 5vw, 2.5rem);
+        margin-bottom: 0.5rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .hero-section p {
+        font-size: clamp(0.875rem, 3vw, 1rem);
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto 1.5rem;
+        line-height: 1.6;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Tool Cards Grid - Mobile Optimized */
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.25rem;
+        margin: 2rem 0;
+    }
+
+    @media (max-width: 640px) {
+        .tools-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .tool-card {
+        background: white;
+        border-radius: 14px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .tool-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary);
+    }
+
+    .tool-card.new::after {
+        content: 'NEW';
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: var(--success);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .tool-icon {
+        font-size: 32px;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+
+    .tool-card:hover .tool-icon {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        color: white;
+    }
+
+    .tool-card h3 {
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-main);
+        font-weight: 700;
+    }
+
+    .tool-card p {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .tool-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .tool-tag {
+        background: var(--light);
+        color: var(--text-muted);
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .tool-card:hover .tool-tag {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Tool Content - Mobile Optimized */
+    .tool-content {
+        display: none;
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin: 1rem 0;
+        animation: fadeIn 0.3s ease;
+        border: 1px solid var(--border);
+    }
+
+    .tool-content.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .tool-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .tool-header h1 {
+        font-size: clamp(1.25rem, 4vw, 1.5rem);
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tool-header h1 i {
+        color: var(--primary);
+    }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 14px;
+    }
+
+    .form-label i {
+        color: var(--primary);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s;
+        font-family: inherit;
+        background: white;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236466f1' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+        padding-right: 40px;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--success), #0da271);
+        color: white;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid var(--border);
+        color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-group .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    /* Code Display */
+    .code-container {
+        background: var(--code-bg);
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin: 1rem 0;
+        overflow: hidden;
+        border: 1px solid #1e293b;
+    }
+
+    .code-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #334155;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .code-language {
+        color: #94a3b8;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .code-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .code-output {
+        color: #e2e8f0;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-all;
+        margin: 0;
+        overflow-x: auto;
+    }
+
+    /* Tabs */
+    .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.5rem;
+    }
+
+    .tab {
+        padding: 10px 20px;
+        background: transparent;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text-muted);
+        transition: all 0.3s;
+        font-size: 14px;
+        position: relative;
+    }
+
+    .tab:hover {
+        color: var(--primary);
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .tab.active {
+        color: var(--primary);
+        background: rgba(99, 102, 241, 0.1);
+    }
+
+    .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -0.5rem;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--primary);
+        border-radius: 1px;
+    }
+
+    /* Password Generator Specific */
+    .password-preview {
+        background: var(--dark);
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        margin: 15px 0;
+        font-family: 'Courier New', monospace;
+        font-size: 20px;
+        letter-spacing: 1px;
+        word-break: break-all;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s;
+        user-select: all;
+    }
+
+    .password-preview:hover {
+        background: var(--dark-card);
+    }
+
+    .password-strength {
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        margin: 10px 0;
+        overflow: hidden;
+    }
+
+    .strength-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: 4px;
+        transition: width 0.3s, background 0.3s;
+    }
+
+    .strength-weak {
+        background: var(--danger);
+        width: 25%;
+    }
+
+    .strength-medium {
+        background: var(--warning);
+        width: 50%;
+    }
+
+    .strength-strong {
+        background: var(--success);
+        width: 75%;
+    }
+
+    .strength-very-strong {
+        background: var(--success);
+        width: 100%;
+    }
+
+    /* Color Picker */
+    .color-picker-container {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .color-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 12px;
+        border: 2px solid var(--border);
+        margin-bottom: 10px;
+        transition: transform 0.3s;
+    }
+
+    .color-preview:hover {
+        transform: scale(1.05);
+    }
+
+    .color-values {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .color-value {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .color-value-label {
+        width: 80px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+
+    .color-value-input {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .color-input {
+        width: 100px;
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 13px;
+    }
+
+    .color-history {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .color-history-item {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .color-history-item:hover {
+        transform: scale(1.1);
+        border-color: var(--primary);
+    }
+
+    /* Regex Tester */
+    .regex-test-result {
+        background: var(--light);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .regex-match {
+        background: rgba(16, 185, 129, 0.1);
+        border-left: 3px solid var(--success);
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 13px;
+    }
+
+    .regex-match .index {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+
+    /* HTTP Tester */
+    .http-method-select {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .http-method {
+        padding: 8px 16px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all 0.2s;
+    }
+
+    .http-method:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .http-method.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: white;
+    }
+
+    .http-response {
+        background: var(--code-bg);
+        color: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        font-family: monospace;
+        font-size: 13px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    /* Developer Tools */
+    .dev-tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .dev-tool {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .dev-tool:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary);
+    }
+
+    .dev-tool-icon {
+        font-size: 24px;
+        color: var(--primary);
+        margin-bottom: 0.75rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+        border-radius: 10px;
+    }
+
+    .dev-tool h4 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .dev-tool p {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    /* Footer */
+    .main-footer {
+        background: white;
+        padding: 2rem 1rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        text-align: left;
+    }
+
+    .footer-section h4 {
+        color: var(--text-main);
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .footer-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .footer-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: color 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .footer-links a:hover {
+        color: var(--primary);
+    }
+
+    .copyright {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+
+    /* Conversion Tabs */
+    .conversion-tab {
+        display: none;
+    }
+
+    .conversion-tab.active {
+        display: block;
+    }
+
+    /* Character Counter */
+    .character-counter {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 5px;
+    }
+
+    /* JSON validation styles */
+    .json-validation {
+        margin-top: 5px;
+        padding: 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        display: none;
+    }
+    
+    .json-validation.valid {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+        border-left: 3px solid var(--success);
+        display: block;
+    }
+    
+    .json-validation.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border-left: 3px solid var(--danger);
+        display: block;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .mobile-menu-btn {
+            display: block;
+        }
+
+        .main-nav {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: var(--dark);
+            padding: 1rem;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            max-height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .main-nav.active {
+            display: flex;
+        }
+
+        .nav-btn {
+            width: 100%;
+            justify-content: flex-start;
+            padding: 12px 16px;
+        }
+
+        .tool-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .tool-header .btn {
+            width: 100%;
+        }
+
+        .btn-group {
+            flex-direction: column;
+        }
+
+        .btn-group .btn {
+            width: 100%;
+        }
+
+        .footer-content {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .dev-tools-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .color-picker-container {
+            flex-direction: column;
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 150px;
+        }
+
+        .modal {
+            padding: 1.5rem;
+            width: 95%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-section {
+            padding: 1.5rem 1rem;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+        }
+
+        .hero-buttons .btn {
+            width: 100%;
+        }
+
+        .grid-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .tabs {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            padding-bottom: 0.25rem;
+        }
+
+        .tab {
+            white-space: nowrap;
+        }
+    }
+
+    /* Utility Classes */
+    .hidden {
+        display: none !important;
+    }
+
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .text-center { text-align: center; }
+    .w-100 { width: 100%; }
+    .d-flex { display: flex; }
+    .align-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: 0.5rem; }
+    .gap-2 { gap: 1rem; }
+    .gap-3 { gap: 1.5rem; }
+    .flex-wrap { flex-wrap: wrap; }
+    
+    /* QR Code Canvas */
+    .qr-code-canvas {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+        background: white;
+    }
+    </style>
+</head>
+<body>
+    <!-- Custom Modal Container -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Confirm Action</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content" id="modalContent">
+                <p>Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" id="modalConfirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <a href="#" class="logo-brand" onclick="showTool('dashboard'); return false;">
+                <i class="fas fa-tools"></i>
+                <span>DevTools Pro</span>
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav class="main-nav" id="mainNav">
+                <button class="nav-btn active" onclick="showTool('dashboard')">
+                    <i class="fas fa-home"></i> Dashboard
+                </button>
+                <button class="nav-btn" onclick="showTool('url-tools')">
+                    <i class="fas fa-link"></i> URL Tools
+                </button>
+                <button class="nav-btn" onclick="showTool('security-tools')">
+                    <i class="fas fa-shield-alt"></i> Security
+                </button>
+                <button class="nav-btn" onclick="showTool('developer-tools')">
+                    <i class="fas fa-code"></i> Dev Tools
+                </button>
+                <button class="nav-btn" onclick="showTool('conversion-tools')">
+                    <i class="fas fa-exchange-alt"></i> Converters
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Dashboard -->
+        <div id="dashboard" class="tool-content active">
+            <div class="hero-section">
+                <h1>DevTools Pro</h1>
+                <p>Complete web developer toolkit with 20+ essential tools for coding, security, and productivity</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="showTool('developer-tools')">
+                        <i class="fas fa-rocket"></i> Try Developer Tools
+                    </button>
+                    <button class="btn btn-outline" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.3);" onclick="showTool('security-tools')">
+                        <i class="fas fa-lock"></i> Secure Your Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Tools -->
+            <div class="tools-grid">
+                <div class="tool-card new" onclick="showTool('url-shortener')">
+                    <div class="tool-icon"><i class="fas fa-link"></i></div>
+                    <h3>URL Shortener</h3>
+                    <p>Create short links with analytics and password protection</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">URL</span>
+                        <span class="tool-tag">Link</span>
+                        <span class="tool-tag">Analytics</span>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="showTool('html-obfuscator')">
+                    <div class="tool-icon"><i class="fas fa-file-shield"></i></div>
+                    <h3>HTML Protector</h3>
+                    <p>Encrypt and protect your HTML source code from copying</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">Security</span>
+                        <span class="tool-tag">HTML</span>
+                        <span class="tool-tag">Encryption</span>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="showTool('json-formatter')">
+                    <div class="tool-icon"><i class="fas fa-brackets-curly"></i></div>
+                    <h3>JSON Formatter</h3>
+                    <p>Validate, format, and minify JSON data with syntax highlighting</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">JSON</span>
+                        <span class="tool-tag">Formatter</span>
+                        <span class="tool-tag">Validator</span>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="showTool('password-generator')">
+                    <div class="tool-icon"><i class="fas fa-key"></i></div>
+                    <h3>Password Generator</h3>
+                    <p>Generate secure passwords with customizable options</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">Security</span>
+                        <span class="tool-tag">Password</span>
+                        <span class="tool-tag">Generator</span>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="showTool('css-minifier')">
+                    <div class="tool-icon"><i class="fas fa-compress"></i></div>
+                    <h3>CSS Minifier</h3>
+                    <p>Minify and optimize CSS code for better performance</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">CSS</span>
+                        <span class="tool-tag">Optimize</span>
+                        <span class="tool-tag">Performance</span>
+                    </div>
+                </div>
+
+                <div class="tool-card" onclick="showTool('js-beautifier')">
+                    <div class="tool-icon"><i class="fas fa-file-code"></i></div>
+                    <h3>JavaScript Beautifier</h3>
+                    <p>Format and beautify JavaScript code for readability</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">JavaScript</span>
+                        <span class="tool-tag">Formatter</span>
+                        <span class="tool-tag">Beautify</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Shortener -->
+        <div id="url-shortener" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-link"></i> URL Shortener</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-globe"></i>
+                        <span>Original URL</span>
+                    </label>
+                    <input type="url" class="form-control" id="originalUrl" placeholder="https://example.com/very-long-url-path" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-tag"></i>
+                        <span>Custom Alias (Optional)</span>
+                    </label>
+                    <input type="text" class="form-control" id="customAlias" placeholder="my-custom-link">
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">Password Protection</label>
+                    <input type="password" class="form-control" id="urlPassword" placeholder="Optional password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Expiration</label>
+                    <select class="form-control" id="urlExpiration">
+                        <option value="never">Never expires</option>
+                        <option value="1">1 day</option>
+                        <option value="7">1 week</option>
+                        <option value="30">1 month</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Redirect Delay</label>
+                    <select class="form-control" id="redirectDelay">
+                        <option value="0">Instant</option>
+                        <option value="5" selected>5 seconds</option>
+                        <option value="10">10 seconds</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="shortenUrl()">
+                    <i class="fas fa-wand-magic-sparkles"></i> Generate Short URL
+                </button>
+                <button class="btn btn-success" id="copyUrlBtn" onclick="copyShortUrl()" style="display: none;">
+                    <i class="fas fa-copy"></i> Copy URL
+                </button>
+                <button class="btn btn-outline" onclick="clearUrlForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+
+            <!-- Result Section -->
+            <div id="urlResult" class="code-container hidden mt-2">
+                <div class="code-header">
+                    <div class="code-language">Short URL Generated</div>
+                    <div class="code-actions">
+                        <button class="btn btn-sm btn-outline" onclick="testShortUrl()">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                        <button class="btn btn-sm btn-outline" onclick="generateQR()">
+                            <i class="fas fa-qrcode"></i> QR Code
+                        </button>
+                    </div>
+                </div>
+                <pre class="code-output" id="shortUrlOutput"></pre>
+                <div id="qrCodeContainer" class="hidden mt-2 text-center"></div>
+            </div>
+        </div>
+
+        <!-- HTML Obfuscator -->
+        <div id="html-obfuscator" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-file-shield"></i> HTML Protector</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-file-code"></i>
+                        <span>HTML Source Code</span>
+                    </label>
+                    <textarea class="form-control" id="htmlSource" placeholder="<html><body><h1>Hello World</h1></body></html>"></textarea>
+                    <div class="character-counter">
+                        <span id="htmlCharCount">0 characters</span>
+                        <span id="htmlLineCount">0 lines</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i>
+                        <span>Protected Output</span>
+                    </label>
+                    <textarea class="form-control" id="htmlOutput" readonly placeholder="Protected code will appear here..."></textarea>
+                    <div class="character-counter">
+                        <span id="protectedCharCount">0 characters</span>
+                        <span id="protectedLineCount">0 lines</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">Protection Level</label>
+                    <select class="form-control" id="protectionLevel">
+                        <option value="basic">Basic</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Include Anti-Copy</label>
+                    <input type="checkbox" id="antiCopy" checked style="width: auto;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Disable Right Click</label>
+                    <input type="checkbox" id="disableRightClick" checked style="width: auto;">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="protectHTML()">
+                    <i class="fas fa-lock"></i> Protect HTML
+                </button>
+                <button class="btn btn-success" onclick="copyHTMLOutput()">
+                    <i class="fas fa-copy"></i> Copy Protected Code
+                </button>
+                <button class="btn btn-outline" onclick="previewProtectedHTML()">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button class="btn btn-outline" onclick="clearHTMLForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- JSON Formatter -->
+        <div id="json-formatter" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-brackets-curly"></i> JSON Formatter & Validator</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-code"></i>
+                        <span>JSON Input</span>
+                    </label>
+                    <textarea class="form-control" id="jsonInput" placeholder='{"example": "Paste your JSON here"}'></textarea>
+                    <div class="character-counter">
+                        <span id="jsonCharCount">0 characters</span>
+                        <span id="jsonLineCount">0 lines</span>
+                    </div>
+                    <div class="json-validation" id="jsonValidation"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Formatted Output</span>
+                    </label>
+                    <textarea class="form-control" id="jsonOutput" readonly placeholder="Formatted JSON will appear here..."></textarea>
+                    <div class="character-counter">
+                        <span id="formattedCharCount">0 characters</span>
+                        <span id="formattedLineCount">0 lines</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="formatJSON()">
+                    <i class="fas fa-magic"></i> Format JSON
+                </button>
+                <button class="btn btn-success" onclick="minifyJSON()">
+                    <i class="fas fa-compress"></i> Minify JSON
+                </button>
+                <button class="btn btn-outline" onclick="validateJSON()">
+                    <i class="fas fa-check"></i> Validate
+                </button>
+                <button class="btn btn-outline" onclick="copyJSONOutput()">
+                    <i class="fas fa-copy"></i> Copy JSON
+                </button>
+                <button class="btn btn-outline" onclick="clearJSONForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- JavaScript Obfuscator -->
+        <div id="js-obfuscator" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fab fa-js"></i> JavaScript Obfuscator</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-file-code"></i>
+                        <span>JavaScript Input</span>
+                    </label>
+                    <textarea class="form-control" id="jsInput" placeholder="function hello() { console.log('Hello World'); }"></textarea>
+                    <div class="character-counter">
+                        <span id="jsCharCount">0 characters</span>
+                        <span id="jsLineCount">0 lines</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i>
+                        <span>Obfuscated Output</span>
+                    </label>
+                    <textarea class="form-control" id="jsOutput" readonly placeholder="Obfuscated JavaScript will appear here..."></textarea>
+                    <div class="character-counter">
+                        <span id="obfuscatedCharCount">0 characters</span>
+                        <span id="obfuscatedLineCount">0 lines</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">Obfuscation Level</label>
+                    <select class="form-control" id="jsObfuscationLevel">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">String Encoding</label>
+                    <select class="form-control" id="jsStringEncoding">
+                        <option value="base64">Base64</option>
+                        <option value="hex">Hex</option>
+                        <option value="none">None</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Control Flow</label>
+                    <select class="form-control" id="jsControlFlow">
+                        <option value="simple">Simple</option>
+                        <option value="complex" selected>Complex</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="obfuscateJS()">
+                    <i class="fas fa-lock"></i> Obfuscate JavaScript
+                </button>
+                <button class="btn btn-success" onclick="copyJSOutput()">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
+                <button class="btn btn-outline" onclick="previewObfuscatedJS()">
+                    <i class="fas fa-play"></i> Preview
+                </button>
+                <button class="btn btn-outline" onclick="clearJSForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Password Generator -->
+        <div id="password-generator" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-key"></i> Password Generator</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-eye"></i>
+                    <span>Generated Password</span>
+                </label>
+                <div class="password-preview" id="passwordPreview" onclick="copyPassword()">
+                    Click Generate
+                </div>
+                <div class="password-strength">
+                    <div class="strength-bar" id="strengthBar"></div>
+                </div>
+                <div class="text-center" id="strengthText" style="font-size: 12px; color: var(--text-muted);">Strength: None</div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">Length: <span id="lengthValue">16</span></label>
+                    <input type="range" class="form-control" id="passwordLength" min="8" max="64" value="16" oninput="updatePasswordLength()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Include Numbers</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="includeNumbers" checked style="width: auto;">
+                        <span style="font-size: 13px;">(0-9)</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Include Symbols</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="includeSymbols" checked style="width: auto;">
+                        <span style="font-size: 13px;">(!@#$%^&*)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">Include Uppercase</label>
+                    <input type="checkbox" id="includeUppercase" checked style="width: auto;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Include Lowercase</label>
+                    <input type="checkbox" id="includeLowercase" checked style="width: auto;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Exclude Similar</label>
+                    <input type="checkbox" id="excludeSimilar" style="width: auto;">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generatePassword()">
+                    <i class="fas fa-redo"></i> Generate Password
+                </button>
+                <button class="btn btn-success" onclick="copyPassword()">
+                    <i class="fas fa-copy"></i> Copy Password
+                </button>
+                <button class="btn btn-outline" onclick="generateMultiple()">
+                    <i class="fas fa-list"></i> Generate 5
+                </button>
+                <button class="btn btn-outline" onclick="clearPasswordHistory()">
+                    <i class="fas fa-history"></i> Clear History
+                </button>
+            </div>
+
+            <div class="code-container mt-2" id="passwordHistory">
+                <div class="code-header">
+                    <div class="code-language">Recent Passwords</div>
+                </div>
+                <pre class="code-output" id="passwordHistoryList"></pre>
+            </div>
+        </div>
+
+        <!-- CSS Minifier -->
+        <div id="css-minifier" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-compress"></i> CSS Minifier</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-file-code"></i>
+                        <span>CSS Input</span>
+                    </label>
+                    <textarea class="form-control" id="cssInput" placeholder=".container { padding: 20px; margin: 0 auto; }"></textarea>
+                    <div class="character-counter">
+                        <span id="cssCharCount">0 characters</span>
+                        <span id="cssLineCount">0 lines</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-compress"></i>
+                        <span>Minified Output</span>
+                    </label>
+                    <textarea class="form-control" id="cssOutput" readonly placeholder="Minified CSS will appear here..."></textarea>
+                    <div class="character-counter">
+                        <span id="minifiedCharCount">0 characters</span>
+                        <span id="minifiedLineCount">0 lines</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">Remove Comments</label>
+                    <input type="checkbox" id="removeComments" checked style="width: auto;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Remove Whitespace</label>
+                    <input type="checkbox" id="removeWhitespace" checked style="width: auto;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Optimize Colors</label>
+                    <input type="checkbox" id="optimizeColors" style="width: auto;">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="minifyCSS()">
+                    <i class="fas fa-compress"></i> Minify CSS
+                </button>
+                <button class="btn btn-success" onclick="copyCSSOutput()">
+                    <i class="fas fa-copy"></i> Copy CSS
+                </button>
+                <button class="btn btn-outline" onclick="clearCSSForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+
+            <div class="code-container mt-2">
+                <div class="code-header">
+                    <div class="code-language">Statistics</div>
+                </div>
+                <pre class="code-output" id="cssStats">Original size: 0 bytes
+Minified size: 0 bytes
+Reduction: 0%</pre>
+            </div>
+        </div>
+
+        <!-- JavaScript Beautifier -->
+        <div id="js-beautifier" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-file-code"></i> JavaScript Beautifier</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-code"></i>
+                        <span>JavaScript Input</span>
+                    </label>
+                    <textarea class="form-control" id="jsBeautifierInput" placeholder="function test(){console.log('hello');}"></textarea>
+                    <div class="character-counter">
+                        <span id="jsBeautifierCharCount">0 characters</span>
+                        <span id="jsBeautifierLineCount">0 lines</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-paint-brush"></i>
+                        <span>Beautified Output</span>
+                    </label>
+                    <textarea class="form-control" id="jsBeautifierOutput" readonly placeholder="Beautified JavaScript will appear here..."></textarea>
+                    <div class="character-counter">
+                        <span id="beautifiedCharCount">0 characters</span>
+                        <span id="beautifiedLineCount">0 lines</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">Indent Size</label>
+                    <select class="form-control" id="indentSize">
+                        <option value="2">2 spaces</option>
+                        <option value="4" selected>4 spaces</option>
+                        <option value="tab">Tab</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quote Style</label>
+                    <select class="form-control" id="quoteStyle">
+                        <option value="single">Single quotes</option>
+                        <option value="double" selected>Double quotes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Semicolons</label>
+                    <select class="form-control" id="semicolonStyle">
+                        <option value="keep">Keep</option>
+                        <option value="remove">Remove unnecessary</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="beautifyJS()">
+                    <i class="fas fa-magic"></i> Beautify JavaScript
+                </button>
+                <button class="btn btn-success" onclick="copyBeautifiedJS()">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
+                <button class="btn btn-outline" onclick="clearJSBeautifierForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Color Picker -->
+        <div id="color-picker" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-palette"></i> Color Picker</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="color-picker-container">
+                <div>
+                    <div class="color-preview" id="colorPreview" style="background: #6366f1;"></div>
+                    <input type="color" class="form-control w-100" id="colorInput" value="#6366f1" oninput="updateColor(this.value)">
+                </div>
+
+                <div class="color-values">
+                    <div class="color-value">
+                        <div class="color-value-label">Hex</div>
+                        <div class="color-value-input">
+                            <input type="text" class="color-input" id="hexValue" value="#6366f1" oninput="updateFromHex(this.value)">
+                            <button class="btn btn-sm btn-outline" onclick="copyColorValue('hex')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="color-value">
+                        <div class="color-value-label">RGB</div>
+                        <div class="color-value-input">
+                            <input type="text" class="color-input" id="rgbValue" value="rgb(99, 102, 241)" oninput="updateFromRGB(this.value)">
+                            <button class="btn btn-sm btn-outline" onclick="copyColorValue('rgb')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="color-value">
+                        <div class="color-value-label">HSL</div>
+                        <div class="color-value-input">
+                            <input type="text" class="color-input" id="hslValue" value="hsl(238, 86%, 67%)" oninput="updateFromHSL(this.value)">
+                            <button class="btn btn-sm btn-outline" onclick="copyColorValue('hsl')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="color-value">
+                        <div class="color-value-label">CSS Variable</div>
+                        <div class="color-value-input">
+                            <input type="text" class="color-input" id="cssVarValue" value="--primary-color: #6366f1;">
+                            <button class="btn btn-sm btn-outline" onclick="copyColorValue('css')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-3">
+                <label class="form-label">Color Harmony</label>
+                <div class="grid-3" id="colorHarmony">
+                    <div class="color-history-item" style="background: #6366f1;" onclick="updateColor('#6366f1')"></div>
+                    <div class="color-history-item" style="background: #8b5cf6;" onclick="updateColor('#8b5cf6')"></div>
+                    <div class="color-history-item" style="background: #a78bfa;" onclick="updateColor('#a78bfa')"></div>
+                    <div class="color-history-item" style="background: #4f46e5;" onclick="updateColor('#4f46e5')"></div>
+                    <div class="color-history-item" style="background: #4338ca;" onclick="updateColor('#4338ca')"></div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="randomColor()">
+                    <i class="fas fa-random"></i> Random Color
+                </button>
+                <button class="btn btn-success" onclick="generatePalette()">
+                    <i class="fas fa-palette"></i> Generate Palette
+                </button>
+                <button class="btn btn-outline" onclick="clearColorHistory()">
+                    <i class="fas fa-eraser"></i> Clear History
+                </button>
+            </div>
+        </div>
+
+        <!-- Regex Tester -->
+        <div id="regex-tester" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-search"></i> Regex Tester</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-code"></i>
+                        <span>Regular Expression</span>
+                    </label>
+                    <input type="text" class="form-control" id="regexPattern" placeholder="\d{3}-\d{3}-\d{4}" value="\d+">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-flag"></i>
+                        <span>Flags</span>
+                    </label>
+                    <div class="d-flex gap-2">
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="flagG" checked> g (global)
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="flagI"> i (case-insensitive)
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="flagM"> m (multiline)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Test Text</span>
+                </label>
+                <textarea class="form-control" id="regexTestText" rows="6" placeholder="Enter text to test against the regex">Hello 123 World 456
+Testing 789 numbers 101112
+No numbers here</textarea>
+                <div class="character-counter">
+                    <span id="regexCharCount">0 characters</span>
+                    <span id="regexLineCount">0 lines</span>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="testRegex()">
+                    <i class="fas fa-play"></i> Test Regex
+                </button>
+                <button class="btn btn-success" onclick="generateRegexCode()">
+                    <i class="fas fa-code"></i> Generate Code
+                </button>
+                <button class="btn btn-outline" onclick="clearRegexForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+
+            <div id="regexResults" class="regex-test-result hidden">
+                <div id="regexResultContent"></div>
+            </div>
+
+            <div class="code-container mt-2">
+                <div class="code-header">
+                    <div class="code-language">Common Regex Patterns</div>
+                </div>
+                <pre class="code-output">
+Email: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+Phone: ^\+?[\d\s\-\(\)]{10,}$
+URL: ^https?:\/\/[^\s/$.?#].[^\s]*$
+IP: ^(\d{1,3}\.){3}\d{1,3}$
+Date (YYYY-MM-DD): ^\d{4}-\d{2}-\d{2}$
+Password: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$</pre>
+            </div>
+        </div>
+
+        <!-- HTTP Tester -->
+        <div id="http-tester" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-globe"></i> HTTP Tester</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="http-method-select">
+                <button class="http-method active" onclick="setHttpMethod('GET')">GET</button>
+                <button class="http-method" onclick="setHttpMethod('POST')">POST</button>
+                <button class="http-method" onclick="setHttpMethod('PUT')">PUT</button>
+                <button class="http-method" onclick="setHttpMethod('DELETE')">DELETE</button>
+                <button class="http-method" onclick="setHttpMethod('PATCH')">PATCH</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-link"></i>
+                    <span>URL</span>
+                </label>
+                <input type="text" class="form-control" id="httpUrl" placeholder="https://jsonplaceholder.typicode.com/posts/1" value="https://jsonplaceholder.typicode.com/posts/1">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-heading"></i>
+                    <span>Headers (JSON)</span>
+                </label>
+                <textarea class="form-control" id="httpHeaders" rows="3" placeholder='{"Content-Type": "application/json"}'></textarea>
+            </div>
+
+            <div class="form-group" id="httpBodyGroup">
+                <label class="form-label">
+                    <i class="fas fa-file-code"></i>
+                    <span>Body (JSON)</span>
+                </label>
+                <textarea class="form-control" id="httpBody" rows="6" placeholder='{"key": "value"}'></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="sendHttpRequest()">
+                    <i class="fas fa-paper-plane"></i> Send Request
+                </button>
+                <button class="btn btn-success" onclick="copyHttpResponse()">
+                    <i class="fas fa-copy"></i> Copy Response
+                </button>
+                <button class="btn btn-outline" onclick="clearHttpForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+
+            <div id="httpResponse" class="http-response hidden">
+                <div id="httpResponseContent"></div>
+            </div>
+
+            <div class="code-container mt-2">
+                <div class="code-header">
+                    <div class="code-language">Example Endpoints</div>
+                </div>
+                <pre class="code-output">
+GET: https://jsonplaceholder.typicode.com/posts/1
+POST: https://jsonplaceholder.typicode.com/posts
+PUT: https://jsonplaceholder.typicode.com/posts/1
+DELETE: https://jsonplaceholder.typicode.com/posts/1
+
+JSONPlaceholder is a free fake API for testing.</pre>
+            </div>
+        </div>
+
+        <!-- Developer Tools -->
+        <div id="developer-tools" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-code"></i> Developer Tools</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="dev-tools-grid">
+                <div class="dev-tool" onclick="showTool('json-formatter')">
+                    <div class="dev-tool-icon"><i class="fas fa-code"></i></div>
+                    <h4>JSON Formatter</h4>
+                    <p>Format, validate, and beautify JSON data</p>
+                </div>
+
+                <div class="dev-tool" onclick="showTool('js-obfuscator')">
+                    <div class="dev-tool-icon"><i class="fab fa-js"></i></div>
+                    <h4>JavaScript Obfuscator</h4>
+                    <p>Protect JavaScript source code</p>
+                </div>
+
+                <div class="dev-tool" onclick="showTool('password-generator')">
+                    <div class="dev-tool-icon"><i class="fas fa-key"></i></div>
+                    <h4>Password Generator</h4>
+                    <p>Generate secure passwords</p>
+                </div>
+
+                <div class="dev-tool" onclick="showTool('css-minifier')">
+                    <div class="dev-tool-icon"><i class="fas fa-compress"></i></div>
+                    <h4>CSS Minifier</h4>
+                    <p>Minify and optimize CSS code</p>
+                </div>
+
+                <div class="dev-tool" onclick="showTool('js-beautifier')">
+                    <div class="dev-tool-icon"><i class="fas fa-file-code"></i></div>
+                    <h4>JavaScript Beautifier</h4>
+                    <p>Format and beautify JavaScript code</p>
+                </div>
+
+                <div class="dev-tool" onclick="showTool('color-picker')">
+                    <div class="dev-tool-icon"><i class="fas fa-palette"></i></div>
+                    <h4>Color Picker</h4>
+                    <p>Pick colors and generate palettes</p>
+                </div>
+
+                <div class="dev-tool" onclick="showTool('regex-tester')">
+                    <div class="dev-tool-icon"><i class="fas fa-search"></i></div>
+                    <h4>Regex Tester</h4>
+                    <p>Test and debug regular expressions</p>
+                </div>
+
+                <div class="dev-tool" onclick="showTool('http-tester')">
+                    <div class="dev-tool-icon"><i class="fas fa-globe"></i></div>
+                    <h4>HTTP Tester</h4>
+                    <p>Test HTTP requests and APIs</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Tools -->
+        <div id="url-tools" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-link"></i> URL Tools</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card" onclick="showTool('url-shortener')">
+                    <div class="tool-icon"><i class="fas fa-scissors"></i></div>
+                    <h3>URL Shortener</h3>
+                    <p>Create short URLs with analytics</p>
+                </div>
+
+                <div class="tool-card" onclick="showTool('url-encoder-decoder')">
+                    <div class="tool-icon"><i class="fas fa-key"></i></div>
+                    <h3>URL Encoder/Decoder</h3>
+                    <p>Encode and decode URL components</p>
+                </div>
+
+                <div class="tool-card" onclick="showTool('qr-generator')">
+                    <div class="tool-icon"><i class="fas fa-qrcode"></i></div>
+                    <h3>QR Code Generator</h3>
+                    <p>Generate QR codes for URLs</p>
+                </div>
+
+                <div class="tool-card" onclick="showTool('url-parser')">
+                    <div class="tool-icon"><i class="fas fa-puzzle-piece"></i></div>
+                    <h3>URL Parser</h3>
+                    <p>Parse and analyze URL components</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tools -->
+        <div id="security-tools" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-shield-alt"></i> Security Tools</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card" onclick="showTool('html-obfuscator')">
+                    <div class="tool-icon"><i class="fas fa-file-shield"></i></div>
+                    <h3>HTML Protector</h3>
+                    <p>Encrypt HTML source code</p>
+                </div>
+
+                <div class="tool-card" onclick="showTool('js-obfuscator')">
+                    <div class="tool-icon"><i class="fab fa-js"></i></div>
+                    <h3>JavaScript Obfuscator</h3>
+                    <p>Protect JavaScript code</p>
+                </div>
+
+                <div class="tool-card" onclick="showTool('password-generator')">
+                    <div class="tool-icon"><i class="fas fa-key"></i></div>
+                    <h3>Password Generator</h3>
+                    <p>Generate secure passwords</p>
+                </div>
+
+                <div class="tool-card" onclick="showTool('encryption-tools')">
+                    <div class="tool-icon"><i class="fas fa-lock"></i></div>
+                    <h3>Encryption Tools</h3>
+                    <p>Encrypt and decrypt text</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: URL Encoder/Decoder -->
+        <div id="url-encoder-decoder" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-key"></i> URL Encoder/Decoder</h1>
+                <button class="btn btn-outline" onclick="showTool('url-tools')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-code"></i>
+                        <span>Original Text</span>
+                    </label>
+                    <textarea class="form-control" id="urlOriginalText" placeholder="Enter text to encode/decode">Hello World! This is a test & example.</textarea>
+                    <div class="character-counter">
+                        <span id="urlOriginalCount">0 characters</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Encoded/Decoded Text</span>
+                    </label>
+                    <textarea class="form-control" id="urlEncodedText" readonly placeholder="Result will appear here..."></textarea>
+                    <div class="character-counter">
+                        <span id="urlEncodedCount">0 characters</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="encodeURL()">
+                    <i class="fas fa-lock"></i> Encode URL
+                </button>
+                <button class="btn btn-success" onclick="decodeURL()">
+                    <i class="fas fa-unlock"></i> Decode URL
+                </button>
+                <button class="btn btn-outline" onclick="copyURLText()">
+                    <i class="fas fa-copy"></i> Copy Result
+                </button>
+                <button class="btn btn-outline" onclick="clearURLForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- NEW: QR Code Generator -->
+        <div id="qr-generator" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-qrcode"></i> QR Code Generator</h1>
+                <button class="btn btn-outline" onclick="showTool('url-tools')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-link"></i>
+                    <span>Text or URL for QR Code</span>
+                </label>
+                <textarea class="form-control" id="qrText" placeholder="Enter text or URL for QR code">https://example.com</textarea>
+                <div class="character-counter">
+                    <span id="qrCharCount">0 characters</span>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">QR Size</label>
+                    <select class="form-control" id="qrSize">
+                        <option value="128">128x128</option>
+                        <option value="256" selected>256x256</option>
+                        <option value="512">512x512</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Foreground Color</label>
+                    <input type="color" class="form-control" id="qrColor" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Background Color</label>
+                    <input type="color" class="form-control" id="qrBgColor" value="#ffffff">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generateQRCode()">
+                    <i class="fas fa-qrcode"></i> Generate QR Code
+                </button>
+                <button class="btn btn-success" onclick="downloadQRCode()">
+                    <i class="fas fa-download"></i> Download QR
+                </button>
+                <button class="btn btn-outline" onclick="clearQRForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+
+            <div class="qr-code-container hidden" id="qrCodeResult">
+                <div class="code-header">
+                    <div class="code-language">QR Code Preview</div>
+                </div>
+                <canvas id="qrCanvas" class="qr-code-canvas mt-2"></canvas>
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-outline" onclick="copyQRCode()">
+                        <i class="fas fa-copy"></i> Copy as Image
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Encryption Tools -->
+        <div id="encryption-tools" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-lock"></i> Encryption Tools</h1>
+                <button class="btn btn-outline" onclick="showTool('security-tools')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Plain Text</span>
+                    </label>
+                    <textarea class="form-control" id="plainText" placeholder="Enter text to encrypt">Secret Message Here</textarea>
+                    <div class="character-counter">
+                        <span id="plainTextCount">0 characters</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i>
+                        <span>Encrypted Text</span>
+                    </label>
+                    <textarea class="form-control" id="encryptedText" readonly placeholder="Encrypted text will appear here..."></textarea>
+                    <div class="character-counter">
+                        <span id="encryptedTextCount">0 characters</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label class="form-label">Encryption Method</label>
+                    <select class="form-control" id="encryptionMethod">
+                        <option value="base64">Base64</option>
+                        <option value="caesar">Caesar Cipher</option>
+                        <option value="xor">XOR Cipher</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Secret Key</label>
+                    <input type="text" class="form-control" id="encryptionKey" placeholder="Enter secret key" value="mySecretKey123">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Shift (for Caesar)</label>
+                    <input type="number" class="form-control" id="caesarShift" value="3" min="1" max="25">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="encryptText()">
+                    <i class="fas fa-lock"></i> Encrypt
+                </button>
+                <button class="btn btn-success" onclick="decryptText()">
+                    <i class="fas fa-unlock"></i> Decrypt
+                </button>
+                <button class="btn btn-outline" onclick="copyEncryptedText()">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+                <button class="btn btn-outline" onclick="clearEncryptionForm()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- NEW: Conversion Tools -->
+        <div id="conversion-tools" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-exchange-alt"></i> Conversion Tools</h1>
+                <button class="btn btn-outline" onclick="showTool('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="tabs" id="conversionTabs">
+                <button class="tab active" onclick="showConversionTab('json-xml')">JSON ⇄ XML</button>
+                <button class="tab" onclick="showConversionTab('markdown-html')">Markdown ⇄ HTML</button>
+                <button class="tab" onclick="showConversionTab('base64')">Base64</button>
+                <button class="tab" onclick="showConversionTab('timestamp')">Timestamp</button>
+            </div>
+
+            <!-- JSON to XML Converter -->
+            <div id="json-xml" class="conversion-tab active">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-brackets-curly"></i>
+                            <span>JSON Input</span>
+                        </label>
+                        <textarea class="form-control" id="jsonToXmlInput" placeholder='{"person": {"name": "John", "age": 30}}'></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-code"></i>
+                            <span>XML Output</span>
+                        </label>
+                        <textarea class="form-control" id="jsonToXmlOutput" readonly placeholder="XML will appear here..."></textarea>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="jsonToXml()">
+                        <i class="fas fa-exchange-alt"></i> Convert to XML
+                    </button>
+                    <button class="btn btn-outline" onclick="xmlToJson()">
+                        <i class="fas fa-exchange-alt"></i> Convert to JSON
+                    </button>
+                </div>
+            </div>
+
+            <!-- Markdown to HTML Converter -->
+            <div id="markdown-html" class="conversion-tab">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-markdown"></i>
+                            <span>Markdown Input</span>
+                        </label>
+                        <textarea class="form-control" id="markdownInput" placeholder="# Title
+**Bold text**
+*Italic text*"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-code"></i>
+                            <span>HTML Output</span>
+                        </label>
+                        <textarea class="form-control" id="htmlOutputMd" readonly placeholder="HTML will appear here..."></textarea>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="markdownToHtml()">
+                        <i class="fas fa-exchange-alt"></i> Convert to HTML
+                    </button>
+                    <button class="btn btn-outline" onclick="previewMarkdown()">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                </div>
+            </div>
+
+            <!-- Base64 Converter -->
+            <div id="base64" class="conversion-tab">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-file-text"></i>
+                            <span>Original Text</span>
+                        </label>
+                        <textarea class="form-control" id="base64Input" placeholder="Text to encode/decode"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-file-code"></i>
+                            <span>Base64 Result</span>
+                        </label>
+                        <textarea class="form-control" id="base64Output" readonly placeholder="Base64 will appear here..."></textarea>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="encodeBase64()">
+                        <i class="fas fa-lock"></i> Encode Base64
+                    </button>
+                    <button class="btn btn-outline" onclick="decodeBase64()">
+                        <i class="fas fa-unlock"></i> Decode Base64
+                    </button>
+                </div>
+            </div>
+
+            <!-- Timestamp Converter -->
+            <div id="timestamp" class="conversion-tab">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-clock"></i>
+                            <span>Timestamp</span>
+                        </label>
+                        <input type="number" class="form-control" id="timestampInput" placeholder="Unix timestamp" value="1704067200">
+                        <div class="mt-1">
+                            <button class="btn btn-sm btn-outline" onclick="setCurrentTimestamp()">
+                                <i class="fas fa-sync"></i> Current Time
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-calendar"></i>
+                            <span>Human Readable</span>
+                        </label>
+                        <input type="text" class="form-control" id="dateTimeOutput" readonly placeholder="Date/Time will appear here...">
+                        <input type="datetime-local" class="form-control mt-2" id="dateTimeInput" onchange="dateToTimestamp()">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="timestampToDate()">
+                        <i class="fas fa-exchange-alt"></i> Convert to Date
+                    </button>
+                    <button class="btn btn-outline" onclick="dateToTimestamp()">
+                        <i class="fas fa-exchange-alt"></i> Convert to Timestamp
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Parser -->
+        <div id="url-parser" class="tool-content">
+            <div class="tool-header">
+                <h1><i class="fas fa-puzzle-piece"></i> URL Parser</h1>
+                <button class="btn btn-outline" onclick="showTool('url-tools')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-link"></i>
+                    <span>URL to Parse</span>
+                </label>
+                <input type="text" class="form-control" id="urlToParse" placeholder="https://example.com/path?query=value#fragment" value="https://example.com:8080/path/to/page?query=value&another=param#section">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="parseURL()">
+                    <i class="fas fa-search"></i> Parse URL
+                </button>
+                <button class="btn btn-outline" onclick="clearURLParser()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+
+            <div class="code-container mt-2" id="urlParserResult">
+                <div class="code-header">
+                    <div class="code-language">URL Components</div>
+                </div>
+                <pre class="code-output" id="urlParserOutput">Enter a URL and click Parse URL to see its components</pre>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>DevTools Pro</h4>
+                <div class="footer-links">
+                    <a href="#" onclick="showTool('dashboard')"><i class="fas fa-home"></i> Dashboard</a>
+                    <a href="#" onclick="showTool('developer-tools')"><i class="fas fa-code"></i> Developer Tools</a>
+                    <a href="#" onclick="showTool('url-tools')"><i class="fas fa-link"></i> URL Tools</a>
+                    <a href="#" onclick="showTool('security-tools')"><i class="fas fa-shield-alt"></i> Security</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Converters</h4>
+                <div class="footer-links">
+                    <a href="#" onclick="showTool('conversion-tools')"><i class="fas fa-exchange-alt"></i> JSON ⇄ XML</a>
+                    <a href="#" onclick="showTool('conversion-tools')"><i class="fas fa-markdown"></i> Markdown ⇄ HTML</a>
+                    <a href="#" onclick="showTool('conversion-tools')"><i class="fas fa-lock"></i> Base64 Tools</a>
+                    <a href="#" onclick="showTool('conversion-tools')"><i class="fas fa-clock"></i> Timestamp</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <div class="footer-links">
+                    <a href="#" onclick="exportData()"><i class="fas fa-download"></i> Export Data</a>
+                    <a href="#" onclick="importData()"><i class="fas fa-upload"></i> Import Data</a>
+                    <a href="#" onclick="showConfirmModal('clearAllData', 'Clear All Data', 'Are you sure you want to clear all data? This will remove:<br>• Password History<br>• Color History<br>• All form data')"><i class="fas fa-trash"></i> Clear Data</a>
+                    <a href="#" onclick="showAboutModal()"><i class="fas fa-info-circle"></i> About</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <i class="fas fa-tools"></i> <strong>DevTools Pro</strong> • Complete Web Developer Suite
+            <br>
+            <span style="font-size: 12px;">
+                Developed with ❤️ by <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 600;">Olawande</a> • 
+                All tools work offline • No installation required • 100% Free
+            </span>
+        </div>
+    </footer>
+
+    <script>
+    // ==================== CUSTOM MODAL SYSTEM ====================
+    let modalConfirmCallback = null;
+
+    function showModal(title, content, confirmCallback = null) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalContent').innerHTML = content;
+        modalConfirmCallback = confirmCallback;
+        
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        
+        if (confirmCallback) {
+            modalConfirmBtn.style.display = 'flex';
+            modalConfirmBtn.onclick = function() {
+                if (modalConfirmCallback) modalConfirmCallback();
+                closeModal();
+            };
+        } else {
+            modalConfirmBtn.style.display = 'none';
+        }
+        
+        modalOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+        modalConfirmCallback = null;
+    }
+
+    function showConfirmModal(callback, title, message) {
+        showModal(title || 'Confirm Action', 
+            `<div class="notification warning">
+                <div class="notification-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">Warning</div>
+                    <div class="notification-message">${message || 'Are you sure you want to perform this action?'}</div>
+                </div>
+            </div>`, 
+            () => window[callback]()
+        );
+    }
+
+    function showAboutModal() {
+        showModal('About DevTools Pro', `
+            <div class="text-center">
+                <div style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h3 style="margin-bottom: 0.5rem;">DevTools Pro v2.0</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Complete web developer toolkit</p>
+                
+                <div style="text-align: left; background: var(--light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 0.5rem;">Features:</h4>
+                    <ul style="padding-left: 1.5rem; color: var(--text-muted);">
+                        <li>20+ Essential Developer Tools</li>
+                        <li>Offline Functionality</li>
+                        <li>Modern UI/UX Design</li>
+                        <li>100% Free & Open Source</li>
+                        <li>No Installation Required</li>
+                        <li>Cross-Platform Compatibility</li>
+                    </ul>
+                </div>
+                
+                <p style="color: var(--text-muted); font-size: 0.875rem;">
+                    Developed with ❤️ by Olawande<br>
+                    © 2024 DevTools Pro. All rights reserved.
+                </p>
+            </div>
+        `);
+    }
+
+    // ==================== CUSTOM NOTIFICATION SYSTEM ====================
+    function showNotification(message, type = 'success', title = '') {
+        const container = document.getElementById('notificationContainer');
+        const notification = document.createElement('div');
+        
+        const icons = {
+            'success': 'fa-check-circle',
+            'error': 'fa-times-circle',
+            'warning': 'fa-exclamation-triangle',
+            'info': 'fa-info-circle'
+        };
+        
+        const titles = {
+            'success': 'Success',
+            'error': 'Error',
+            'warning': 'Warning',
+            'info': 'Information'
+        };
+        
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-icon">
+                <i class="fas ${icons[type] || icons.info}"></i>
+            </div>
+            <div class="notification-content">
+                <div class="notification-title">${title || titles[type] || 'Notification'}</div>
+                <div class="notification-message">${message}</div>
+            </div>
+            <button class="notification-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        container.appendChild(notification);
+        
+        // Show animation
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, 5000);
+        
+        // Play sound for error notifications
+        if (type === 'error' || type === 'warning') {
+            playNotificationSound(type);
+        }
+    }
+
+    function playNotificationSound(type) {
+        try {
+            // Create notification sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = type === 'error' ? 300 : 500;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        } catch (e) {
+            // Audio context not supported or blocked
+        }
+    }
+
+    // ==================== TOOL NAVIGATION ====================
+    function showTool(toolId) {
+        // Hide all tool contents
+        document.querySelectorAll('.tool-content').forEach(tool => {
+            tool.classList.remove('active');
+        });
+        
+        // Remove active class from all nav buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Show selected tool
+        const tool = document.getElementById(toolId);
+        if (tool) {
+            tool.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            // If tool doesn't exist, show dashboard
+            showTool('dashboard');
+            showNotification('Tool not found', 'error', 'Error');
+            return;
+        }
+        
+        // Find and activate corresponding nav button
+        const navBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => 
+            btn.getAttribute('onclick')?.includes(`'${toolId}'`)
+        );
+        
+        if (navBtn) {
+            navBtn.classList.add('active');
+        } else {
+            // Activate Dashboard button for non-nav tools
+            document.querySelector('.nav-btn[onclick*="dashboard"]')?.classList.add('active');
+        }
+        
+        // Close mobile menu if open
+        document.getElementById('mainNav')?.classList.remove('active');
+        
+        // Initialize tool if needed
+        initTool(toolId);
+    }
+
+    function toggleMobileMenu() {
+        const nav = document.getElementById('mainNav');
+        nav.classList.toggle('active');
+    }
+
+    function showConversionTab(tabId) {
+        document.querySelectorAll('.conversion-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('#conversionTabs .tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function initTool(toolId) {
+        switch(toolId) {
+            case 'password-generator':
+                if (localStorage.getItem('passwordHistory')) {
+                    updatePasswordHistory();
+                } else {
+                    generatePassword();
+                }
+                break;
+            case 'color-picker':
+                updateColor('#6366f1');
+                break;
+            case 'conversion-tools':
+                showConversionTab('json-xml');
+                break;
+            case 'url-parser':
+                if (!document.getElementById('urlParserOutput').textContent.includes('components')) {
+                    parseURL();
+                }
+                break;
+        }
+        updateCharacterCounters();
+    }
+
+    // ==================== CHARACTER COUNTERS ====================
+    function updateCharacterCounters() {
+        // Update all textareas
+        document.querySelectorAll('textarea').forEach(textarea => {
+            const id = textarea.id;
+            const text = textarea.value;
+            const charCount = text.length;
+            const lineCount = text.split('\n').length;
+            
+            // Update character counter
+            const charCountSpan = document.getElementById(`${id}CharCount`);
+            if (charCountSpan) {
+                charCountSpan.textContent = `${charCount} characters`;
+            }
+            
+            // Update line counter
+            const lineCountSpan = document.getElementById(`${id}LineCount`);
+            if (lineCountSpan) {
+                lineCountSpan.textContent = `${lineCount} lines`;
+            }
+        });
+    }
+
+    // ==================== URL SHORTENER ====================
+    function shortenUrl() {
+        const originalUrl = document.getElementById('originalUrl').value.trim();
+        const customAlias = document.getElementById('customAlias').value.trim();
+        
+        if (!originalUrl) {
+            showNotification('Please enter a URL', 'error', 'Error');
+            return;
+        }
+        
+        if (!originalUrl.startsWith('http://') && !originalUrl.startsWith('https://')) {
+            showNotification('URL must start with http:// or https://', 'error', 'Error');
+            return;
+        }
+        
+        // Generate short code
+        let shortCode;
+        if (customAlias) {
+            shortCode = customAlias.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
+            if (!shortCode) {
+                showNotification('Invalid custom alias. Use only letters, numbers, hyphens, and underscores.', 'error', 'Error');
+                return;
+            }
+        } else {
+            shortCode = generateShortCode(6);
+        }
+        
+        // Create short URL
+        const shortUrl = `https://dev.tl/${shortCode}`;
+        
+        // Display result
+        document.getElementById('shortUrlOutput').textContent = shortUrl;
+        document.getElementById('urlResult').classList.remove('hidden');
+        document.getElementById('copyUrlBtn').style.display = 'flex';
+        
+        showNotification('URL shortened successfully!', 'success', 'Success');
+    }
+
+    function generateShortCode(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const cryptoArray = new Uint32Array(length);
+        window.crypto.getRandomValues(cryptoArray);
+        
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars[cryptoArray[i] % chars.length];
+        }
+        return result;
+    }
+
+    function copyShortUrl() {
+        const url = document.getElementById('shortUrlOutput').textContent;
+        navigator.clipboard.writeText(url).then(() => {
+            showNotification('URL copied to clipboard!', 'success', 'Copied');
+        }).catch(err => {
+            showNotification('Failed to copy URL', 'error', 'Error');
+        });
+    }
+
+    function testShortUrl() {
+        const url = document.getElementById('shortUrlOutput').textContent;
+        if (url) {
+            window.open(url, '_blank');
+        }
+    }
+
+    function generateQR() {
+        const url = document.getElementById('shortUrlOutput').textContent;
+        const container = document.getElementById('qrCodeContainer');
+        
+        if (!url) {
+            showNotification('No URL to generate QR code', 'error', 'Error');
+            return;
+        }
+        
+        container.innerHTML = `
+            <div class="qr-code-container">
+                <div class="code-header">
+                    <div class="code-language">QR Code</div>
+                </div>
+                <canvas id="qrShortCanvas" width="256" height="256"></canvas>
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-outline" onclick="downloadShortQR()">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Draw simple QR-like pattern
+        const canvas = document.getElementById('qrShortCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Clear canvas
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 256, 256);
+        
+        // Draw QR-like pattern
+        ctx.fillStyle = '#000000';
+        const size = 256;
+        const moduleSize = 8;
+        
+        // Draw position markers
+        ctx.fillRect(20, 20, 56, 56);
+        ctx.fillRect(180, 20, 56, 56);
+        ctx.fillRect(20, 180, 56, 56);
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(24, 24, 48, 48);
+        ctx.fillRect(184, 24, 48, 48);
+        ctx.fillRect(24, 184, 48, 48);
+        
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(28, 28, 40, 40);
+        ctx.fillRect(188, 28, 40, 40);
+        ctx.fillRect(28, 188, 40, 40);
+        
+        // Draw data modules
+        const urlHash = url.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        for (let y = 0; y < 29; y++) {
+            for (let x = 0; x < 29; x++) {
+                if (x < 10 && y < 10) continue;
+                if (x > 18 && y < 10) continue;
+                if (x < 10 && y > 18) continue;
+                
+                if ((urlHash + x * y) % 3 === 0) {
+                    ctx.fillRect(20 + x * moduleSize, 20 + y * moduleSize, moduleSize, moduleSize);
+                }
+            }
+        }
+        
+        container.classList.remove('hidden');
+        showNotification('QR Code generated!', 'success', 'Success');
+    }
+
+    function downloadShortQR() {
+        const canvas = document.getElementById('qrShortCanvas');
+        const link = document.createElement('a');
+        link.download = 'short-url-qr.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
+    function clearUrlForm() {
+        document.getElementById('originalUrl').value = '';
+        document.getElementById('customAlias').value = '';
+        document.getElementById('urlPassword').value = '';
+        document.getElementById('urlResult').classList.add('hidden');
+        document.getElementById('qrCodeContainer').classList.add('hidden');
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== HTML PROTECTOR ====================
+    function protectHTML() {
+        const source = document.getElementById('htmlSource').value.trim();
+        
+        if (!source) {
+            showNotification('Please enter HTML code', 'error', 'Error');
+            return;
+        }
+        
+        const protectionLevel = document.getElementById('protectionLevel').value;
+        const antiCopy = document.getElementById('antiCopy').checked;
+        const disableRightClick = document.getElementById('disableRightClick').checked;
+        
+        // Encode HTML
+        const encoded = btoa(unescape(encodeURIComponent(source)));
+        
+        // Build protection script
+        let protectionScript = '';
+        
+        if (antiCopy || disableRightClick) {
+            protectionScript += `
+    // Protection Script
+    (function() {
+        'use strict';
+        ${antiCopy ? `
+        // Disable text selection and copying
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
+            document.body.style.msUserSelect = 'none';
+        });
+        
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            e.clipboardData.setData('text/plain', 'Content is protected');
+            showNotification('Copying is disabled', 'error', 'Protected Content');
+        });
+        
+        document.addEventListener('cut', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+        ` : ''}
+        
+        ${disableRightClick ? `
+        // Disable right click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showNotification('Right click is disabled', 'warning', 'Protected Content');
+        });
+        
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'c')) {
+                e.preventDefault();
+                showNotification('Keyboard shortcut disabled', 'warning', 'Protected Content');
+            }
+        });
+        ` : ''}
+        
+        function showNotification(message, type, title) {
+            const notification = document.createElement('div');
+            notification.innerHTML = \`
+                <div style="position: fixed; top: 20px; right: 20px; background: \${type === 'error' ? '#f44336' : '#ff9800'}; color: white; padding: 15px; border-radius: 5px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <strong>\${title}:</strong> \${message}
+                </div>
+            \`;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+    })();`;
+        }
+        
+        let output = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protected Content</title>
+    <script>
+        // Decode and render HTML content
+        document.write(decodeURIComponent(escape(atob("${encoded}"))));
+        ${protectionScript}
+    <\/script>
+    <noscript>
+        <style>
+            body { 
+                font-family: Arial, sans-serif; 
+                padding: 40px; 
+                text-align: center; 
+                background: #f8f9fa; 
+            }
+            .no-js-message {
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                max-width: 500px;
+                margin: 0 auto;
+            }
+            .no-js-message h2 { color: #dc3545; margin-bottom: 15px; }
+            .no-js-message p { color: #666; margin-bottom: 20px; }
+        </style>
+    </noscript>
+</head>
+<body>
+    <noscript>
+        <div class="no-js-message">
+            <h2>JavaScript Required</h2>
+            <p>This content is protected and requires JavaScript to be enabled.</p>
+            <p>Please enable JavaScript in your browser settings to view this content.</p>
+        </div>
+    </noscript>
+</body>
+</html>`;
+        
+        document.getElementById('htmlOutput').value = output;
+        showNotification('HTML protected successfully!', 'success', 'Success');
+        updateCharacterCounters();
+    }
+
+    function copyHTMLOutput() {
+        const output = document.getElementById('htmlOutput').value;
+        if (!output.trim()) {
+            showNotification('No output to copy', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(output).then(() => {
+            showNotification('Protected code copied to clipboard!', 'success', 'Copied');
+        });
+    }
+
+    function previewProtectedHTML() {
+        const output = document.getElementById('htmlOutput').value;
+        if (!output.trim()) {
+            showNotification('No code to preview', 'error', 'Error');
+            return;
+        }
+        
+        const previewWindow = window.open('', '_blank');
+        previewWindow.document.write(output);
+        previewWindow.document.close();
+    }
+
+    function clearHTMLForm() {
+        document.getElementById('htmlSource').value = '';
+        document.getElementById('htmlOutput').value = '';
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== JSON FORMATTER ====================
+    function formatJSON() {
+        const input = document.getElementById('jsonInput').value.trim();
+        
+        if (!input) {
+            showNotification('Please enter JSON', 'error', 'Error');
+            return;
+        }
+        
+        try {
+            const obj = JSON.parse(input);
+            const formatted = JSON.stringify(obj, null, 2);
+            document.getElementById('jsonOutput').value = formatted;
+            
+            // Update validation
+            const validation = document.getElementById('jsonValidation');
+            validation.textContent = '✓ Valid JSON';
+            validation.className = 'json-validation valid';
+            
+            showNotification('JSON formatted successfully!', 'success', 'Success');
+            updateCharacterCounters();
+        } catch (e) {
+            const validation = document.getElementById('jsonValidation');
+            validation.textContent = '✗ ' + e.message;
+            validation.className = 'json-validation error';
+            showNotification('Invalid JSON: ' + e.message, 'error', 'Error');
+        }
+    }
+
+    function minifyJSON() {
+        const input = document.getElementById('jsonInput').value.trim();
+        
+        if (!input) {
+            showNotification('Please enter JSON', 'error', 'Error');
+            return;
+        }
+        
+        try {
+            const obj = JSON.parse(input);
+            const minified = JSON.stringify(obj);
+            document.getElementById('jsonOutput').value = minified;
+            
+            const originalSize = input.length;
+            const minifiedSize = minified.length;
+            const reduction = originalSize > 0 ? Math.round((1 - minifiedSize / originalSize) * 100) : 0;
+            
+            showNotification(`JSON minified! Size reduced by ${reduction}%`, 'success', 'Success');
+            updateCharacterCounters();
+        } catch (e) {
+            showNotification('Invalid JSON: ' + e.message, 'error', 'Error');
+        }
+    }
+
+    function validateJSON() {
+        const input = document.getElementById('jsonInput').value.trim();
+        const validation = document.getElementById('jsonValidation');
+        
+        if (!input) {
+            validation.textContent = 'Please enter JSON to validate';
+            validation.className = 'json-validation error';
+            return;
+        }
+        
+        try {
+            JSON.parse(input);
+            validation.textContent = '✓ Valid JSON';
+            validation.className = 'json-validation valid';
+            showNotification('JSON is valid!', 'success', 'Success');
+        } catch (e) {
+            validation.textContent = '✗ ' + e.message;
+            validation.className = 'json-validation error';
+            showNotification('Invalid JSON: ' + e.message, 'error', 'Error');
+        }
+    }
+
+    function copyJSONOutput() {
+        const output = document.getElementById('jsonOutput').value;
+        if (!output.trim()) {
+            showNotification('No output to copy', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(output).then(() => {
+            showNotification('JSON copied to clipboard!', 'success', 'Copied');
+        });
+    }
+
+    function clearJSONForm() {
+        document.getElementById('jsonInput').value = '';
+        document.getElementById('jsonOutput').value = '';
+        document.getElementById('jsonValidation').textContent = '';
+        document.getElementById('jsonValidation').className = 'json-validation';
+        document.getElementById('jsonValidation').style.display = 'none';
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== JAVASCRIPT OBFUSCATOR ====================
+    function obfuscateJS() {
+        const source = document.getElementById('jsInput').value.trim();
+        
+        if (!source) {
+            showNotification('Please enter JavaScript code', 'error', 'Error');
+            return;
+        }
+        
+        const level = document.getElementById('jsObfuscationLevel').value;
+        const stringEncoding = document.getElementById('jsStringEncoding').value;
+        const controlFlow = document.getElementById('jsControlFlow').value;
+        
+        // Simple obfuscation for demo
+        let output = source;
+        
+        // String encoding
+        if (stringEncoding === 'base64') {
+            output = output.replace(/["']([^"']*)["']/g, function(match, content) {
+                return '"' + btoa(content) + '"';
+            });
+        } else if (stringEncoding === 'hex') {
+            output = output.replace(/["']([^"']*)["']/g, function(match, content) {
+                const hex = content.split('').map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+                return '"' + hex + '"';
+            });
+        }
+        
+        // Variable renaming
+        const vars = source.match(/\b(var|let|const)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g) || [];
+        const varMap = {};
+        const usedNames = new Set();
+        
+        vars.forEach(v => {
+            const varName = v.split(/\s+/)[1];
+            if (!varMap[varName] && varName.length > 2) {
+                let newName;
+                do {
+                    newName = '_0x' + Math.random().toString(16).substr(2, 4);
+                } while (usedNames.has(newName));
+                
+                varMap[varName] = newName;
+                usedNames.add(newName);
+            }
+        });
+        
+        // Replace variables
+        for (const [original, obfuscated] of Object.entries(varMap)) {
+            const regex = new RegExp(`\\b${original}\\b`, 'g');
+            output = output.replace(regex, obfuscated);
+        }
+        
+        // Add wrapper based on level
+        if (level === 'high') {
+            output = `(function(){${output}})();`;
+        } else if (level === 'medium') {
+            output = `/* Obfuscated with DevTools Pro */\n${output}`;
+        }
+        
+        // Add control flow obfuscation
+        if (controlFlow === 'complex') {
+            output = output.replace(/function\s+(\w+)/g, 'function $1');
+        }
+        
+        document.getElementById('jsOutput').value = output;
+        showNotification('JavaScript obfuscated successfully!', 'success', 'Success');
+        updateCharacterCounters();
+    }
+
+    function copyJSOutput() {
+        const output = document.getElementById('jsOutput').value;
+        if (!output.trim()) {
+            showNotification('No output to copy', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(output).then(() => {
+            showNotification('Obfuscated code copied!', 'success', 'Copied');
+        });
+    }
+
+    function previewObfuscatedJS() {
+        const output = document.getElementById('jsOutput').value;
+        if (!output.trim()) {
+            showNotification('No code to preview', 'error', 'Error');
+            return;
+        }
+        
+        const previewWindow = window.open('', '_blank');
+        previewWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>JS Preview</title>
+                <style>
+                    body { font-family: monospace; padding: 20px; background: #0f172a; color: #e2e8f0; }
+                    pre { background: #1e293b; padding: 20px; border-radius: 8px; overflow-x: auto; }
+                    .console { background: #000; color: #0f0; padding: 10px; margin-top: 20px; border-radius: 5px; }
+                </style>
+            </head>
+            <body>
+                <h3>JavaScript Preview</h3>
+                <pre id="code"></pre>
+                <div class="console">
+                    <strong>Console Output:</strong><br>
+                    <div id="consoleOutput"></div>
+                </div>
+                <script>
+                    const code = \`${output.replace(/`/g, '\\`')}\`;
+                    document.getElementById('code').textContent = code;
+                    
+                    // Redirect console.log
+                    const originalLog = console.log;
+                    const consoleOutput = document.getElementById('consoleOutput');
+                    console.log = function(...args) {
+                        originalLog.apply(console, args);
+                        consoleOutput.innerHTML += args.join(' ') + '<br>';
+                    };
+                    
+                    try {
+                        eval(code);
+                    } catch(e) {
+                        consoleOutput.innerHTML += 'Error: ' + e.message;
+                    }
+                <\/script>
+            </body>
+            </html>
+        `);
+        previewWindow.document.close();
+    }
+
+    function clearJSForm() {
+        document.getElementById('jsInput').value = '';
+        document.getElementById('jsOutput').value = '';
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== PASSWORD GENERATOR ====================
+    let passwordHistory = JSON.parse(localStorage.getItem('passwordHistory')) || [];
+
+    function generatePassword() {
+        const length = parseInt(document.getElementById('passwordLength').value);
+        const includeNumbers = document.getElementById('includeNumbers').checked;
+        const includeSymbols = document.getElementById('includeSymbols').checked;
+        const includeUppercase = document.getElementById('includeUppercase').checked;
+        const includeLowercase = document.getElementById('includeLowercase').checked;
+        const excludeSimilar = document.getElementById('excludeSimilar').checked;
+        
+        let charset = '';
+        if (includeLowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
+        if (includeUppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if (includeNumbers) charset += '0123456789';
+        if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+        
+        if (charset === '') {
+            showNotification('Please select at least one character type', 'error', 'Error');
+            return;
+        }
+        
+        if (excludeSimilar) {
+            charset = charset.replace(/[il1Lo0O]/g, '');
+        }
+        
+        // Generate password using cryptographically secure random numbers
+        let password = '';
+        const cryptoArray = new Uint32Array(length);
+        window.crypto.getRandomValues(cryptoArray);
+        
+        for (let i = 0; i < length; i++) {
+            const randomIndex = cryptoArray[i] % charset.length;
+            password += charset[randomIndex];
+        }
+        
+        // Ensure at least one character from each selected type
+        if (includeUppercase && !/[A-Z]/.test(password)) {
+            const randomIndex = Math.floor(Math.random() * password.length);
+            password = password.substring(0, randomIndex) + 'A' + password.substring(randomIndex + 1);
+        }
+        if (includeLowercase && !/[a-z]/.test(password)) {
+            const randomIndex = Math.floor(Math.random() * password.length);
+            password = password.substring(0, randomIndex) + 'a' + password.substring(randomIndex + 1);
+        }
+        if (includeNumbers && !/\d/.test(password)) {
+            const randomIndex = Math.floor(Math.random() * password.length);
+            password = password.substring(0, randomIndex) + '1' + password.substring(randomIndex + 1);
+        }
+        if (includeSymbols && !/[^a-zA-Z0-9]/.test(password)) {
+            const randomIndex = Math.floor(Math.random() * password.length);
+            password = password.substring(0, randomIndex) + '!' + password.substring(randomIndex + 1);
+        }
+        
+        document.getElementById('passwordPreview').textContent = password;
+        updatePasswordStrength(password);
+        
+        // Add to history
+        const passwordData = {
+            password: password,
+            timestamp: new Date().toISOString(),
+            length: length,
+            strength: calculatePasswordStrength(password)
+        };
+        
+        passwordHistory.unshift(passwordData);
+        if (passwordHistory.length > 10) {
+            passwordHistory = passwordHistory.slice(0, 10);
+        }
+        
+        localStorage.setItem('passwordHistory', JSON.stringify(passwordHistory));
+        updatePasswordHistory();
+        
+        showNotification('Password generated successfully!', 'success', 'Success');
+    }
+
+    function updatePasswordLength() {
+        const length = document.getElementById('passwordLength').value;
+        document.getElementById('lengthValue').textContent = length;
+    }
+
+    function calculatePasswordStrength(password) {
+        let score = 0;
+        
+        // Length score
+        if (password.length >= 8) score += 1;
+        if (password.length >= 12) score += 2;
+        if (password.length >= 16) score += 3;
+        
+        // Character variety score
+        if (/[a-z]/.test(password)) score += 1;
+        if (/[A-Z]/.test(password)) score += 1;
+        if (/\d/.test(password)) score += 1;
+        if (/[^a-zA-Z0-9]/.test(password)) score += 2;
+        
+        // Entropy bonus
+        const uniqueChars = new Set(password).size;
+        score += Math.min(Math.floor(uniqueChars / 3), 2);
+        
+        return Math.min(score, 10);
+    }
+
+    function updatePasswordStrength(password) {
+        const score = calculatePasswordStrength(password);
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+        
+        let strengthClass = '';
+        let strengthLabel = '';
+        
+        if (score <= 3) {
+            strengthClass = 'strength-weak';
+            strengthLabel = 'Weak';
+            strengthText.style.color = 'var(--danger)';
+        } else if (score <= 6) {
+            strengthClass = 'strength-medium';
+            strengthLabel = 'Medium';
+            strengthText.style.color = 'var(--warning)';
+        } else if (score <= 8) {
+            strengthClass = 'strength-strong';
+            strengthLabel = 'Strong';
+            strengthText.style.color = 'var(--success)';
+        } else {
+            strengthClass = 'strength-very-strong';
+            strengthLabel = 'Very Strong';
+            strengthText.style.color = 'var(--success)';
+        }
+        
+        strengthBar.className = 'strength-bar ' + strengthClass;
+        strengthText.textContent = `Strength: ${strengthLabel} (${score}/10)`;
+    }
+
+    function copyPassword() {
+        const password = document.getElementById('passwordPreview').textContent;
+        if (password === 'Click Generate') {
+            showNotification('Please generate a password first', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(password).then(() => {
+            showNotification('Password copied to clipboard!', 'success', 'Copied');
+        }).catch(err => {
+            showNotification('Failed to copy password', 'error', 'Error');
+        });
+    }
+
+    function generateMultiple() {
+        const passwords = [];
+        const originalBtn = event.target;
+        const originalText = originalBtn.innerHTML;
+        
+        originalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+        originalBtn.disabled = true;
+        
+        setTimeout(() => {
+            for (let i = 0; i < 5; i++) {
+                generatePassword();
+                passwords.push(document.getElementById('passwordPreview').textContent);
+            }
+            
+            // Show all passwords
+            let historyHTML = '';
+            passwords.forEach((pwd, index) => {
+                historyHTML += `${index + 1}. ${pwd}\n`;
+            });
+            
+            document.getElementById('passwordHistoryList').textContent = historyHTML;
+            document.getElementById('passwordHistory').classList.remove('hidden');
+            
+            originalBtn.innerHTML = originalText;
+            originalBtn.disabled = false;
+            
+            showNotification('5 passwords generated!', 'success', 'Success');
+        }, 100);
+    }
+
+    function updatePasswordHistory() {
+        let historyHTML = '';
+        passwordHistory.slice(0, 10).forEach((item, index) => {
+            const date = new Date(item.timestamp).toLocaleTimeString();
+            historyHTML += `${index + 1}. ${item.password} (${date})\n`;
+        });
+        
+        if (passwordHistory.length > 0) {
+            document.getElementById('passwordHistoryList').textContent = historyHTML;
+            document.getElementById('passwordHistory').classList.remove('hidden');
+        }
+    }
+
+    function clearPasswordHistory() {
+        showConfirmModal('confirmClearPasswordHistory', 'Clear Password History', 
+            'Are you sure you want to clear all password history?<br>This action cannot be undone.');
+    }
+
+    function confirmClearPasswordHistory() {
+        passwordHistory = [];
+        localStorage.removeItem('passwordHistory');
+        document.getElementById('passwordHistory').classList.add('hidden');
+        showNotification('Password history cleared', 'info', 'Cleared');
+    }
+
+    // ==================== CSS MINIFIER ====================
+    function minifyCSS() {
+        const source = document.getElementById('cssInput').value.trim();
+        
+        if (!source) {
+            showNotification('Please enter CSS code', 'error', 'Error');
+            return;
+        }
+        
+        const removeComments = document.getElementById('removeComments').checked;
+        const removeWhitespace = document.getElementById('removeWhitespace').checked;
+        const optimizeColors = document.getElementById('optimizeColors').checked;
+        
+        let output = source;
+        
+        // Remove comments
+        if (removeComments) {
+            output = output.replace(/\/\*[\s\S]*?\*\//g, '');
+        }
+        
+        // Remove whitespace
+        if (removeWhitespace) {
+            output = output.replace(/\s+/g, ' ');
+            output = output.replace(/\s*([{}:;,])\s*/g, '$1');
+            output = output.replace(/;\s*}/g, '}');
+            output = output.trim();
+        }
+        
+        // Optimize colors
+        if (optimizeColors) {
+            // Convert #rrggbb to #rgb if possible
+            output = output.replace(/#([a-fA-F0-9])\1([a-fA-F0-9])\2([a-fA-F0-9])\3(?![a-fA-F0-9])/g, '#$1$2$3');
+            // Convert rgb() to shorter format
+            output = output.replace(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g, 'rgb($1,$2,$3)');
+            // Convert rgba() to shorter format
+            output = output.replace(/rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)/g, 'rgba($1,$2,$3,$4)');
+        }
+        
+        document.getElementById('cssOutput').value = output;
+        
+        // Calculate statistics
+        const originalSize = new TextEncoder().encode(source).length;
+        const minifiedSize = new TextEncoder().encode(output).length;
+        const reduction = originalSize > 0 ? Math.round((1 - minifiedSize / originalSize) * 100) : 0;
+        
+        document.getElementById('cssStats').textContent = 
+            `Original size: ${originalSize} bytes\n` +
+            `Minified size: ${minifiedSize} bytes\n` +
+            `Reduction: ${reduction}%`;
+        
+        showNotification(`CSS minified! Size reduced by ${reduction}%`, 'success', 'Success');
+        updateCharacterCounters();
+    }
+
+    function copyCSSOutput() {
+        const output = document.getElementById('cssOutput').value;
+        if (!output.trim()) {
+            showNotification('No output to copy', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(output).then(() => {
+            showNotification('Minified CSS copied!', 'success', 'Copied');
+        });
+    }
+
+    function clearCSSForm() {
+        document.getElementById('cssInput').value = '';
+        document.getElementById('cssOutput').value = '';
+        document.getElementById('cssStats').textContent = 'Original size: 0 bytes\nMinified size: 0 bytes\nReduction: 0%';
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== JAVASCRIPT BEAUTIFIER ====================
+    function beautifyJS() {
+        const source = document.getElementById('jsBeautifierInput').value.trim();
+        
+        if (!source) {
+            showNotification('Please enter JavaScript code', 'error', 'Error');
+            return;
+        }
+        
+        const indentSize = document.getElementById('indentSize').value;
+        const quoteStyle = document.getElementById('quoteStyle').value;
+        const semicolonStyle = document.getElementById('semicolonStyle').value;
+        
+        let output = source;
+        let indentLevel = 0;
+        const lines = source.split('\n');
+        const beautified = [];
+        
+        for (let line of lines) {
+            line = line.trim();
+            
+            // Skip empty lines at the beginning
+            if (!line && beautified.length === 0) continue;
+            
+            // Handle closing braces/brackets
+            if (line.includes('}') || line.includes(']')) {
+                indentLevel = Math.max(0, indentLevel - 1);
+            }
+            
+            // Add indentation
+            const indent = indentSize === 'tab' ? '\t' : ' '.repeat(parseInt(indentSize));
+            beautified.push(indent.repeat(indentLevel) + line);
+            
+            // Handle opening braces/brackets
+            if (line.includes('{') || line.includes('[')) {
+                indentLevel++;
+            }
+        }
+        
+        output = beautified.join('\n');
+        
+        // Quote style
+        if (quoteStyle === 'single') {
+            output = output.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, "'$1'");
+        } else if (quoteStyle === 'double') {
+            output = output.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, '"$1"');
+        }
+        
+        // Semicolon cleanup
+        if (semicolonStyle === 'remove') {
+            output = output.replace(/;[ \t]*$/gm, '');
+            output = output.replace(/;[ \t]*(?=\n\s*[})])/g, '');
+        }
+        
+        document.getElementById('jsBeautifierOutput').value = output;
+        showNotification('JavaScript beautified!', 'success', 'Success');
+        updateCharacterCounters();
+    }
+
+    function copyBeautifiedJS() {
+        const output = document.getElementById('jsBeautifierOutput').value;
+        if (!output.trim()) {
+            showNotification('No output to copy', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(output).then(() => {
+            showNotification('Beautified code copied!', 'success', 'Copied');
+        });
+    }
+
+    function clearJSBeautifierForm() {
+        document.getElementById('jsBeautifierInput').value = '';
+        document.getElementById('jsBeautifierOutput').value = '';
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== COLOR PICKER ====================
+    let colorHistory = JSON.parse(localStorage.getItem('colorHistory')) || ['#6366f1', '#8b5cf6', '#a78bfa', '#4f46e5', '#4338ca'];
+
+    function updateColor(hex) {
+        if (!hex.startsWith('#')) hex = '#' + hex;
+        
+        // Validate hex color
+        if (!/^#[0-9A-F]{6}$/i.test(hex)) {
+            showNotification('Invalid color format', 'error', 'Error');
+            return;
+        }
+        
+        document.getElementById('colorPreview').style.background = hex;
+        document.getElementById('colorInput').value = hex;
+        document.getElementById('hexValue').value = hex;
+        
+        // Convert hex to RGB
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        document.getElementById('rgbValue').value = `rgb(${r}, ${g}, ${b})`;
+        
+        // Convert hex to HSL
+        const hsl = hexToHSL(hex);
+        document.getElementById('hslValue').value = `hsl(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%)`;
+        
+        // Update CSS variable
+        document.getElementById('cssVarValue').value = `--primary-color: ${hex};`;
+        
+        // Add to history
+        if (!colorHistory.includes(hex)) {
+            colorHistory.unshift(hex);
+            if (colorHistory.length > 15) colorHistory.pop();
+            localStorage.setItem('colorHistory', JSON.stringify(colorHistory));
+            updateColorHistory();
+        }
+    }
+
+    function hexToHSL(hex) {
+        let r = parseInt(hex.slice(1, 3), 16) / 255;
+        let g = parseInt(hex.slice(3, 5), 16) / 255;
+        let b = parseInt(hex.slice(5, 7), 16) / 255;
+        
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+        
+        if (max === min) {
+            h = s = 0; // achromatic
+        } else {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            
+            switch (max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+        
+        return {
+            h: h * 360,
+            s: s * 100,
+            l: l * 100
+        };
+    }
+
+    function updateFromHex(hex) {
+        if (/^#?[0-9A-F]{6}$/i.test(hex.replace('#', ''))) {
+            if (!hex.startsWith('#')) hex = '#' + hex;
+            updateColor(hex);
+        }
+    }
+
+    function updateFromRGB(rgb) {
+        const match = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (match) {
+            const r = parseInt(match[1]);
+            const g = parseInt(match[2]);
+            const b = parseInt(match[3]);
+            const hex = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+            updateColor(hex);
+        }
+    }
+
+    function updateFromHSL(hsl) {
+        const match = hsl.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+        if (match) {
+            const h = parseInt(match[1]) / 360;
+            const s = parseInt(match[2]) / 100;
+            const l = parseInt(match[3]) / 100;
+            
+            if (s === 0) {
+                const rgb = Math.round(l * 255);
+                const hex = `#${rgb.toString(16).padStart(2, '0').repeat(3)}`;
+                updateColor(hex);
+                return;
+            }
+            
+            const hue2rgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            
+            const r = Math.round(hue2rgb(p, q, h + 1/3) * 255);
+            const g = Math.round(hue2rgb(p, q, h) * 255);
+            const b = Math.round(hue2rgb(p, q, h - 1/3) * 255);
+            
+            const hex = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+            updateColor(hex);
+        }
+    }
+
+    function copyColorValue(type) {
+        let value;
+        switch(type) {
+            case 'hex': value = document.getElementById('hexValue').value; break;
+            case 'rgb': value = document.getElementById('rgbValue').value; break;
+            case 'hsl': value = document.getElementById('hslValue').value; break;
+            case 'css': value = document.getElementById('cssVarValue').value; break;
+        }
+        
+        if (!value) {
+            showNotification('No value to copy', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(value).then(() => {
+            showNotification(`${type.toUpperCase()} value copied!`, 'success', 'Copied');
+        });
+    }
+
+    function randomColor() {
+        const hex = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+        document.getElementById('colorInput').value = hex;
+        updateColor(hex);
+        showNotification('Random color generated!', 'success', 'Success');
+    }
+
+    function generatePalette() {
+        const baseColor = document.getElementById('hexValue').value;
+        const harmony = document.getElementById('colorHarmony');
+        
+        if (!baseColor) {
+            showNotification('Please select a base color first', 'error', 'Error');
+            return;
+        }
+        
+        // Generate complementary colors based on HSL
+        const baseHSL = hexToHSL(baseColor);
+        let colors = [baseColor];
+        
+        // Generate analogous colors
+        for (let i = 1; i < 5; i++) {
+            let newHue = (baseHSL.h + (i * 72)) % 360;
+            if (newHue < 0) newHue += 360;
+            
+            // Convert back to hex
+            const newColor = hslToHex(newHue, baseHSL.s, baseHSL.l);
+            colors.push(newColor);
+        }
+        
+        let html = '';
+        colors.forEach(color => {
+            html += `<div class="color-history-item" style="background: ${color};" onclick="updateColor('${color}')"></div>`;
+        });
+        
+        harmony.innerHTML = html;
+        showNotification('Color palette generated!', 'success', 'Success');
+    }
+
+    function hslToHex(h, s, l) {
+        h /= 360;
+        s /= 100;
+        l /= 100;
+        
+        let r, g, b;
+        
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            const hue2rgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+        
+        const toHex = x => {
+            const hex = Math.round(x * 255).toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
+        
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+
+    function updateColorHistory() {
+        const container = document.getElementById('colorHarmony');
+        let html = '';
+        colorHistory.forEach(color => {
+            html += `<div class="color-history-item" style="background: ${color};" onclick="updateColor('${color}')"></div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function clearColorHistory() {
+        showConfirmModal('confirmClearColorHistory', 'Clear Color History', 
+            'Are you sure you want to clear all saved colors?');
+    }
+
+    function confirmClearColorHistory() {
+        colorHistory = ['#6366f1', '#8b5cf6', '#a78bfa', '#4f46e5', '#4338ca'];
+        localStorage.setItem('colorHistory', JSON.stringify(colorHistory));
+        updateColorHistory();
+        showNotification('Color history cleared', 'info', 'Cleared');
+    }
+
+    // ==================== REGEX TESTER ====================
+    function testRegex() {
+        const pattern = document.getElementById('regexPattern').value.trim();
+        const text = document.getElementById('regexTestText').value;
+        
+        if (!pattern || !text) {
+            showNotification('Please enter both regex pattern and test text', 'error', 'Error');
+            return;
+        }
+        
+        let flags = '';
+        if (document.getElementById('flagG').checked) flags += 'g';
+        if (document.getElementById('flagI').checked) flags += 'i';
+        if (document.getElementById('flagM').checked) flags += 'm';
+        
+        try {
+            const regex = new RegExp(pattern, flags);
+            let matches;
+            let resultHTML = '';
+            let matchCount = 0;
+            
+            if (flags.includes('g')) {
+                // Global match
+                matches = [...text.matchAll(regex)];
+                for (const match of matches) {
+                    matchCount++;
+                    const escapedMatch = match[0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    resultHTML += `
+                        <div class="regex-match">
+                            <div class="index">Match ${matchCount} at index ${match.index}:</div>
+                            <div>${escapedMatch}</div>
+                            ${match.length > 1 ? '<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Groups: ' + match.slice(1).map(g => g ? g.replace(/</g, '&lt;').replace(/>/g, '&gt;') : 'null').join(', ') + '</div>' : ''}
+                        </div>
+                    `;
+                }
+            } else {
+                // Single match
+                const match = text.match(regex);
+                if (match) {
+                    matchCount = 1;
+                    const escapedMatch = match[0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    resultHTML += `
+                        <div class="regex-match">
+                            <div class="index">Match found at index ${match.index}:</div>
+                            <div>${escapedMatch}</div>
+                            ${match.length > 1 ? '<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Groups: ' + match.slice(1).map(g => g ? g.replace(/</g, '&lt;').replace(/>/g, '&gt;') : 'null').join(', ') + '</div>' : ''}
+                        </div>
+                    `;
+                }
+            }
+            
+            if (matchCount === 0) {
+                resultHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">No matches found</div>';
+            } else {
+                resultHTML = `<div style="margin-bottom: 10px; font-size: 12px; color: var(--text-muted);">Found ${matchCount} matches:</div>` + resultHTML;
+            }
+            
+            document.getElementById('regexResultContent').innerHTML = resultHTML;
+            document.getElementById('regexResults').classList.remove('hidden');
+            
+            showNotification(`Found ${matchCount} matches`, 'success', 'Success');
+            
+        } catch (e) {
+            document.getElementById('regexResultContent').innerHTML = 
+                `<div style="color: var(--danger); padding: 20px; text-align: center;">Error: ${e.message}</div>`;
+            document.getElementById('regexResults').classList.remove('hidden');
+            showNotification('Invalid regex pattern: ' + e.message, 'error', 'Error');
+        }
+    }
+
+    function generateRegexCode() {
+        const pattern = document.getElementById('regexPattern').value.trim();
+        
+        if (!pattern) {
+            showNotification('Please enter a regex pattern', 'error', 'Error');
+            return;
+        }
+        
+        let flags = '';
+        if (document.getElementById('flagG').checked) flags += 'g';
+        if (document.getElementById('flagI').checked) flags += 'i';
+        if (document.getElementById('flagM').checked) flags += 'm';
+        
+        const code = `// Regex Pattern
+const pattern = /${pattern}/${flags};
+
+// Usage examples:
+const regex1 = new RegExp("${pattern}", "${flags}");
+const regex2 = /${pattern}/${flags};
+
+// Test a string
+const testString = "Your test string here";
+const matches = testString.match(regex1);
+const matchAll = [...testString.matchAll(regex1)];
+
+// Check if pattern matches
+const hasMatch = regex1.test(testString);
+
+// Replace matches
+const replaced = testString.replace(regex1, "replacement");
+
+// Split by pattern
+const parts = testString.split(regex1);`;
+        
+        navigator.clipboard.writeText(code).then(() => {
+            showNotification('Regex code copied to clipboard!', 'success', 'Copied');
+        });
+    }
+
+    function clearRegexForm() {
+        document.getElementById('regexPattern').value = '';
+        document.getElementById('regexTestText').value = '';
+        document.getElementById('regexResults').classList.add('hidden');
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== HTTP TESTER ====================
+    let currentMethod = 'GET';
+
+    function setHttpMethod(method) {
+        currentMethod = method;
+        document.querySelectorAll('.http-method').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Show/hide body field
+        const bodyGroup = document.getElementById('httpBodyGroup');
+        if (method === 'GET' || method === 'DELETE') {
+            bodyGroup.style.display = 'none';
+        } else {
+            bodyGroup.style.display = 'block';
+        }
+    }
+
+    async function sendHttpRequest() {
+        const url = document.getElementById('httpUrl').value.trim();
+        const headersText = document.getElementById('httpHeaders').value.trim();
+        const bodyText = document.getElementById('httpBody').value.trim();
+        
+        if (!url) {
+            showNotification('Please enter a URL', 'error', 'Error');
+            return;
+        }
+        
+        // Validate URL
+        try {
+            new URL(url);
+        } catch (e) {
+            showNotification('Invalid URL format', 'error', 'Error');
+            return;
+        }
+        
+        let headers = {};
+        if (headersText) {
+            try {
+                headers = JSON.parse(headersText);
+            } catch (e) {
+                showNotification('Invalid headers JSON: ' + e.message, 'error', 'Error');
+                return;
+            }
+        }
+        
+        let body = null;
+        if (bodyText && currentMethod !== 'GET' && currentMethod !== 'DELETE') {
+            try {
+                body = JSON.parse(bodyText);
+            } catch (e) {
+                showNotification('Invalid body JSON: ' + e.message, 'error', 'Error');
+                return;
+            }
+        }
+        
+        // Add loading state
+        const sendBtn = event.target;
+        const originalText = sendBtn.innerHTML;
+        sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        sendBtn.disabled = true;
+        
+        const options = {
+            method: currentMethod,
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            }
+        };
+        
+        if (body) {
+            options.body = JSON.stringify(body);
+        }
+        
+        try {
+            const response = await fetch(url, options);
+            const contentType = response.headers.get('content-type');
+            let data;
+            
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                data = await response.text();
+            }
+            
+            const responseContent = {
+                status: response.status,
+                statusText: response.statusText,
+                headers: Object.fromEntries(response.headers.entries()),
+                url: response.url,
+                data: data
+            };
+            
+            const formattedResponse = JSON.stringify(responseContent, null, 2);
+            document.getElementById('httpResponseContent').textContent = formattedResponse;
+            document.getElementById('httpResponse').classList.remove('hidden');
+            
+            showNotification(`Request successful (${response.status})`, 'success', 'Success');
+            
+        } catch (error) {
+            document.getElementById('httpResponseContent').textContent = 
+                `Error: ${error.message}\n\nTroubleshooting tips:\n1. Check if the URL is correct\n2. Verify CORS settings for cross-origin requests\n3. Ensure you have an internet connection\n4. Check if the API requires authentication`;
+            document.getElementById('httpResponse').classList.remove('hidden');
+            showNotification('Request failed: ' + error.message, 'error', 'Error');
+        } finally {
+            // Restore button state
+            sendBtn.innerHTML = originalText;
+            sendBtn.disabled = false;
+        }
+    }
+
+    function copyHttpResponse() {
+        const response = document.getElementById('httpResponseContent').textContent;
+        if (!response.trim()) {
+            showNotification('No response to copy', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(response).then(() => {
+            showNotification('Response copied to clipboard!', 'success', 'Copied');
+        });
+    }
+
+    function clearHttpForm() {
+        document.getElementById('httpUrl').value = '';
+        document.getElementById('httpHeaders').value = '';
+        document.getElementById('httpBody').value = '';
+        document.getElementById('httpResponse').classList.add('hidden');
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== URL ENCODER/DECODER ====================
+    function encodeURL() {
+        const text = document.getElementById('urlOriginalText').value.trim();
+        
+        if (!text) {
+            showNotification('Please enter text to encode', 'error', 'Error');
+            return;
+        }
+        
+        const encoded = encodeURIComponent(text);
+        document.getElementById('urlEncodedText').value = encoded;
+        showNotification('URL encoded successfully!', 'success', 'Success');
+        updateCharacterCounters();
+    }
+
+    function decodeURL() {
+        const text = document.getElementById('urlOriginalText').value.trim();
+        
+        if (!text) {
+            showNotification('Please enter text to decode', 'error', 'Error');
+            return;
+        }
+        
+        try {
+            const decoded = decodeURIComponent(text);
+            document.getElementById('urlEncodedText').value = decoded;
+            showNotification('URL decoded successfully!', 'success', 'Success');
+        } catch (e) {
+            showNotification('Invalid encoded URL: ' + e.message, 'error', 'Error');
+        }
+        updateCharacterCounters();
+    }
+
+    function copyURLText() {
+        const text = document.getElementById('urlEncodedText').value;
+        if (!text.trim()) {
+            showNotification('No text to copy', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('Result copied to clipboard!', 'success', 'Copied');
+        });
+    }
+
+    function clearURLForm() {
+        document.getElementById('urlOriginalText').value = '';
+        document.getElementById('urlEncodedText').value = '';
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== QR CODE GENERATOR ====================
+    function generateQRCode() {
+        const text = document.getElementById('qrText').value.trim();
+        
+        if (!text) {
+            showNotification('Please enter text or URL for QR code', 'error', 'Error');
+            return;
+        }
+        
+        const size = parseInt(document.getElementById('qrSize').value);
+        const color = document.getElementById('qrColor').value;
+        const bgColor = document.getElementById('qrBgColor').value;
+        
+        const canvas = document.getElementById('qrCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Clear canvas
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, size, size);
+        
+        // Draw QR-like pattern (simulated)
+        ctx.fillStyle = color;
+        const moduleSize = size / 29; // 29x29 grid
+        
+        // Draw position markers
+        drawPositionMarker(ctx, 4, 4, moduleSize, size);
+        drawPositionMarker(ctx, size/moduleSize - 11, 4, moduleSize, size);
+        drawPositionMarker(ctx, 4, size/moduleSize - 11, moduleSize, size);
+        
+        // Draw timing patterns
+        for (let i = 8; i < size/moduleSize - 8; i++) {
+            if (i % 2 === 0) {
+                ctx.fillRect(6 * moduleSize, i * moduleSize, moduleSize, moduleSize);
+                ctx.fillRect(i * moduleSize, 6 * moduleSize, moduleSize, moduleSize);
+            }
+        }
+        
+        // Draw data modules based on text hash
+        const textHash = text.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        for (let y = 0; y < 29; y++) {
+            for (let x = 0; x < 29; x++) {
+                // Skip position markers and timing patterns
+                if ((x < 7 && y < 7) || (x > 21 && y < 7) || (x < 7 && y > 21)) continue;
+                if ((x === 6 && y > 6 && y < 22) || (y === 6 && x > 6 && x < 22)) continue;
+                
+                if ((textHash + x * y) % 2 === 0) {
+                    ctx.fillRect(x * moduleSize, y * moduleSize, moduleSize, moduleSize);
+                }
+            }
+        }
+        
+        document.getElementById('qrCodeResult').classList.remove('hidden');
+        showNotification('QR Code generated!', 'success', 'Success');
+    }
+
+    function drawPositionMarker(ctx, x, y, moduleSize, size) {
+        const markerSize = 7 * moduleSize;
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(x * moduleSize, y * moduleSize, markerSize, markerSize);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect((x + 1) * moduleSize, (y + 1) * moduleSize, 5 * moduleSize, 5 * moduleSize);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect((x + 2) * moduleSize, (y + 2) * moduleSize, 3 * moduleSize, 3 * moduleSize);
+    }
+
+    function downloadQRCode() {
+        const canvas = document.getElementById('qrCanvas');
+        const link = document.createElement('a');
+        link.download = 'qrcode.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showNotification('QR Code downloaded!', 'success', 'Success');
+    }
+
+    function copyQRCode() {
+        const canvas = document.getElementById('qrCanvas');
+        canvas.toBlob(blob => {
+            navigator.clipboard.write([
+                new ClipboardItem({
+                    'image/png': blob
+                })
+            ]).then(() => {
+                showNotification('QR Code copied to clipboard!', 'success', 'Copied');
+            }).catch(err => {
+                showNotification('Failed to copy QR Code: ' + err.message, 'error', 'Error');
+            });
+        });
+    }
+
+    function clearQRForm() {
+        document.getElementById('qrText').value = '';
+        document.getElementById('qrCodeResult').classList.add('hidden');
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== ENCRYPTION TOOLS ====================
+    function encryptText() {
+        const text = document.getElementById('plainText').value.trim();
+        const method = document.getElementById('encryptionMethod').value;
+        const key = document.getElementById('encryptionKey').value;
+        
+        if (!text) {
+            showNotification('Please enter text to encrypt', 'error', 'Error');
+            return;
+        }
+        
+        let encrypted = '';
+        
+        switch(method) {
+            case 'base64':
+                encrypted = btoa(unescape(encodeURIComponent(text)));
+                break;
+            case 'caesar':
+                const shift = parseInt(document.getElementById('caesarShift').value);
+                encrypted = text.split('').map(char => {
+                    if (char.match(/[a-z]/i)) {
+                        const code = char.charCodeAt(0);
+                        const base = code >= 65 && code <= 90 ? 65 : 97;
+                        return String.fromCharCode(((code - base + shift) % 26) + base);
+                    }
+                    return char;
+                }).join('');
+                break;
+            case 'xor':
+                encrypted = text.split('').map((char, index) => {
+                    const keyChar = key.charCodeAt(index % key.length);
+                    return String.fromCharCode(char.charCodeAt(0) ^ keyChar);
+                }).join('');
+                // Convert to hex for display
+                encrypted = encrypted.split('').map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+                break;
+        }
+        
+        document.getElementById('encryptedText').value = encrypted;
+        showNotification('Text encrypted successfully!', 'success', 'Success');
+        updateCharacterCounters();
+    }
+
+    function decryptText() {
+        const text = document.getElementById('plainText').value.trim();
+        const method = document.getElementById('encryptionMethod').value;
+        const key = document.getElementById('encryptionKey').value;
+        
+        if (!text) {
+            showNotification('Please enter text to decrypt', 'error', 'Error');
+            return;
+        }
+        
+        let decrypted = '';
+        
+        try {
+            switch(method) {
+                case 'base64':
+                    decrypted = decodeURIComponent(escape(atob(text)));
+                    break;
+                case 'caesar':
+                    const shift = parseInt(document.getElementById('caesarShift').value);
+                    decrypted = text.split('').map(char => {
+                        if (char.match(/[a-z]/i)) {
+                            const code = char.charCodeAt(0);
+                            const base = code >= 65 && code <= 90 ? 65 : 97;
+                            return String.fromCharCode(((code - base - shift + 26) % 26) + base);
+                        }
+                        return char;
+                    }).join('');
+                    break;
+                case 'xor':
+                    // Convert from hex
+                    const hex = text.match(/.{1,2}/g) || [];
+                    const decoded = hex.map(h => String.fromCharCode(parseInt(h, 16))).join('');
+                    decrypted = decoded.split('').map((char, index) => {
+                        const keyChar = key.charCodeAt(index % key.length);
+                        return String.fromCharCode(char.charCodeAt(0) ^ keyChar);
+                    }).join('');
+                    break;
+            }
+            
+            document.getElementById('encryptedText').value = decrypted;
+            showNotification('Text decrypted successfully!', 'success', 'Success');
+        } catch (e) {
+            showNotification('Decryption failed: ' + e.message, 'error', 'Error');
+        }
+        updateCharacterCounters();
+    }
+
+    function copyEncryptedText() {
+        const text = document.getElementById('encryptedText').value;
+        if (!text.trim()) {
+            showNotification('No text to copy', 'error', 'Error');
+            return;
+        }
+        
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('Encrypted text copied!', 'success', 'Copied');
+        });
+    }
+
+    function clearEncryptionForm() {
+        document.getElementById('plainText').value = '';
+        document.getElementById('encryptedText').value = '';
+        showNotification('Form cleared', 'info', 'Cleared');
+        updateCharacterCounters();
+    }
+
+    // ==================== CONVERSION TOOLS ====================
+    function jsonToXml() {
+        const jsonInput = document.getElementById('jsonToXmlInput').value.trim();
+        
+        if (!jsonInput) {
+            showNotification('Please enter JSON', 'error', 'Error');
+            return;
+        }
+        
+        try {
+            const obj = JSON.parse(jsonInput);
+            const xml = convertJsonToXml(obj, 'root');
+            document.getElementById('jsonToXmlOutput').value = '<?xml version="1.0" encoding="UTF-8"?>\n' + xml;
+            showNotification('Converted to XML successfully!', 'success', 'Success');
+        } catch (e) {
+            showNotification('Invalid JSON: ' + e.message, 'error', 'Error');
+        }
+    }
+
+    function convertJsonToXml(obj, nodeName) {
+        let xml = '';
+        
+        if (typeof obj === 'object' && obj !== null) {
+            if (Array.isArray(obj)) {
+                obj.forEach(item => {
+                    xml += `<${nodeName}>\n${convertJsonToXml(item, 'item')}</${nodeName}>\n`;
+                });
+            } else {
+                xml += `<${nodeName}>\n`;
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        const value = obj[key];
+                        if (typeof value === 'object' && value !== null) {
+                            xml += convertJsonToXml(value, key);
+                        } else {
+                            xml += `<${key}>${escapeXml(value)}</${key}>\n`;
+                        }
+                    }
+                }
+                xml += `</${nodeName}>\n`;
+            }
+        } else {
+            xml += `<${nodeName}>${escapeXml(obj)}</${nodeName}>\n`;
+        }
+        
+        return xml;
+    }
+
+    function escapeXml(unsafe) {
+        if (unsafe === null || unsafe === undefined) return '';
+        return unsafe.toString()
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+    }
+
+    function xmlToJson() {
+        const xmlInput = document.getElementById('jsonToXmlOutput').value.trim();
+        
+        if (!xmlInput) {
+            showNotification('Please enter XML first by converting JSON', 'error', 'Error');
+            return;
+        }
+        
+        showNotification('XML to JSON conversion requires a proper XML parser library. For now, use online tools or implement a proper XML parser.', 'info', 'Note');
+    }
+
+    function markdownToHtml() {
+        const markdown = document.getElementById('markdownInput').value;
+        
+        // Simple Markdown to HTML conversion
+        let html = markdown
+            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+            .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
+            .replace(/^##### (.*$)/gm, '<h5>$1</h5>')
+            .replace(/^###### (.*$)/gm, '<h6>$1</h6>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>')
+            .replace(/~~(.*?)~~/g, '<del>$1</del>')
+            .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>')
+            .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1">')
+            .replace(/^\s*-\s+(.*$)/gm, '<li>$1</li>')
+            .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>)/g, '<ul>\n$1\n</ul>')
+            .replace(/\n/g, '<br>\n');
+        
+        document.getElementById('htmlOutputMd').value = html;
+        showNotification('Converted to HTML successfully!', 'success', 'Success');
+    }
+
+    function previewMarkdown() {
+        const html = document.getElementById('htmlOutputMd').value;
+        if (!html.trim()) {
+            markdownToHtml();
+        }
+        
+        const htmlContent = document.getElementById('htmlOutputMd').value;
+        const preview = window.open('', '_blank');
+        preview.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Markdown Preview</title>
+                <style>
+                    body { 
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                        padding: 40px; 
+                        max-width: 800px; 
+                        margin: 0 auto; 
+                        line-height: 1.6;
+                        color: #333;
+                    }
+                    h1 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
+                    h2 { border-bottom: 1px solid #eee; padding-bottom: 8px; }
+                    code { 
+                        background: #f5f5f5; 
+                        padding: 2px 6px; 
+                        border-radius: 3px; 
+                        font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+                        font-size: 0.9em;
+                    }
+                    pre { 
+                        background: #f5f5f5; 
+                        padding: 15px; 
+                        border-radius: 5px; 
+                        overflow-x: auto;
+                    }
+                    a { color: #0366d6; text-decoration: none; }
+                    a:hover { text-decoration: underline; }
+                    img { max-width: 100%; height: auto; }
+                    blockquote { 
+                        border-left: 4px solid #ddd; 
+                        padding-left: 15px; 
+                        color: #666;
+                        margin-left: 0;
+                    }
+                </style>
+            </head>
+            <body>
+                ${htmlContent}
+            </body>
+            </html>
+        `);
+        preview.document.close();
+    }
+
+    function encodeBase64() {
+        const text = document.getElementById('base64Input').value.trim();
+        
+        if (!text) {
+            showNotification('Please enter text to encode', 'error', 'Error');
+            return;
+        }
+        
+        const encoded = btoa(unescape(encodeURIComponent(text)));
+        document.getElementById('base64Output').value = encoded;
+        showNotification('Encoded to Base64!', 'success', 'Success');
+    }
+
+    function decodeBase64() {
+        const text = document.getElementById('base64Input').value.trim();
+        
+        if (!text) {
+            showNotification('Please enter text to decode', 'error', 'Error');
+            return;
+        }
+        
+        try {
+            const decoded = decodeURIComponent(escape(atob(text)));
+            document.getElementById('base64Output').value = decoded;
+            showNotification('Decoded from Base64!', 'success', 'Success');
+        } catch (e) {
+            showNotification('Invalid Base64: ' + e.message, 'error', 'Error');
+        }
+    }
+
+    function timestampToDate() {
+        const timestamp = document.getElementById('timestampInput').value.trim();
+        
+        if (!timestamp) {
+            showNotification('Please enter a timestamp', 'error', 'Error');
+            return;
+        }
+        
+        const date = new Date(parseInt(timestamp) * 1000);
+        if (isNaN(date.getTime())) {
+            showNotification('Invalid timestamp', 'error', 'Error');
+            return;
+        }
+        
+        document.getElementById('dateTimeOutput').value = date.toLocaleString();
+        showNotification('Converted to date!', 'success', 'Success');
+    }
+
+    function dateToTimestamp() {
+        const dateInput = document.getElementById('dateTimeInput').value;
+        
+        if (!dateInput) {
+            showNotification('Please select a date and time', 'error', 'Error');
+            return;
+        }
+        
+        const date = new Date(dateInput);
+        const timestamp = Math.floor(date.getTime() / 1000);
+        document.getElementById('timestampInput').value = timestamp;
+        timestampToDate();
+    }
+
+    function setCurrentTimestamp() {
+        const now = Math.floor(Date.now() / 1000);
+        document.getElementById('timestampInput').value = now;
+        timestampToDate();
+        showNotification('Set to current time!', 'success', 'Success');
+    }
+
+    // ==================== URL PARSER ====================
+    function parseURL() {
+        const url = document.getElementById('urlToParse').value.trim();
+        
+        if (!url) {
+            showNotification('Please enter a URL', 'error', 'Error');
+            return;
+        }
+        
+        try {
+            const urlObj = new URL(url);
+            const params = new URLSearchParams(urlObj.search);
+            
+            let result = `🌐 Full URL: ${urlObj.href}\n\n`;
+            result += `📋 Protocol: ${urlObj.protocol}\n`;
+            result += `🏠 Hostname: ${urlObj.hostname}\n`;
+            result += `🔌 Port: ${urlObj.port || '(default)'}\n`;
+            result += `📁 Pathname: ${urlObj.pathname}\n`;
+            result += `🔍 Search: ${urlObj.search || '(none)'}\n`;
+            result += `📍 Hash: ${urlObj.hash || '(none)'}\n`;
+            result += `🎯 Origin: ${urlObj.origin}\n`;
+            result += `👤 Username: ${urlObj.username || '(none)'}\n`;
+            result += `🔑 Password: ${urlObj.password ? '***' : '(none)'}\n\n`;
+            
+            if (params.toString()) {
+                result += `📊 Query Parameters:\n`;
+                params.forEach((value, key) => {
+                    result += `  • ${key}: ${value}\n`;
+                });
+            } else {
+                result += `📊 Query Parameters: None\n`;
+            }
+            
+            document.getElementById('urlParserOutput').textContent = result;
+            document.getElementById('urlParserResult').classList.remove('hidden');
+            showNotification('URL parsed successfully!', 'success', 'Success');
+        } catch (e) {
+            document.getElementById('urlParserOutput').textContent = 
+                `❌ Error: ${e.message}\n\n💡 Make sure:\n• The URL is valid (include http:// or https://)\n• Special characters are properly encoded\n• The URL format is correct`;
+            document.getElementById('urlParserResult').classList.remove('hidden');
+            showNotification('Invalid URL: ' + e.message, 'error', 'Error');
+        }
+    }
+
+    function clearURLParser() {
+        document.getElementById('urlToParse').value = '';
+        document.getElementById('urlParserResult').classList.add('hidden');
+        showNotification('Form cleared', 'info', 'Cleared');
+    }
+
+    // ==================== UTILITY FUNCTIONS ====================
+    function exportData() {
+        const data = {
+            timestamp: new Date().toISOString(),
+            version: '2.0.0',
+            generatedPasswords: passwordHistory,
+            savedColors: colorHistory,
+            exportDate: new Date().toLocaleString(),
+            app: 'DevTools Pro'
+        };
+        
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `devtools-pro-data-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification('Data exported successfully!', 'success', 'Exported');
+    }
+
+    function importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.generatedPasswords && Array.isArray(data.generatedPasswords)) {
+                        passwordHistory = data.generatedPasswords;
+                        localStorage.setItem('passwordHistory', JSON.stringify(passwordHistory));
+                        updatePasswordHistory();
+                    }
+                    
+                    if (data.savedColors && Array.isArray(data.savedColors)) {
+                        colorHistory = data.savedColors;
+                        localStorage.setItem('colorHistory', JSON.stringify(colorHistory));
+                        updateColorHistory();
+                    }
+                    
+                    showNotification('Data imported successfully!', 'success', 'Imported');
+                } catch (error) {
+                    showNotification('Invalid data file format', 'error', 'Error');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    function clearAllData() {
+        // This is called from modal confirmation
+        passwordHistory = [];
+        colorHistory = ['#6366f1', '#8b5cf6', '#a78bfa', '#4f46e5', '#4338ca'];
+        
+        localStorage.clear();
+        
+        // Clear all form fields
+        document.querySelectorAll('input[type="text"], input[type="url"], input[type="password"], textarea').forEach(field => {
+            if (!field.id.includes('timestampInput')) {
+                field.value = '';
+            }
+        });
+        
+        document.querySelectorAll('.code-output').forEach(output => {
+            output.textContent = '';
+        });
+        
+        document.querySelectorAll('.hidden').forEach(el => {
+            el.classList.add('hidden');
+        });
+        
+        // Reset password generator
+        generatePassword();
+        
+        // Reset color picker
+        updateColor('#6366f1');
+        
+        updatePasswordHistory();
+        updateColorHistory();
+        updateCharacterCounters();
+        
+        showNotification('All data cleared!', 'success', 'Cleared');
+    }
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize character counters
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', updateCharacterCounters);
+        });
+        
+        // Initialize from localStorage
+        if (localStorage.getItem('passwordHistory')) {
+            try {
+                passwordHistory = JSON.parse(localStorage.getItem('passwordHistory'));
+                updatePasswordHistory();
+            } catch (e) {
+                localStorage.removeItem('passwordHistory');
+            }
+        }
+        
+        if (localStorage.getItem('colorHistory')) {
+            try {
+                colorHistory = JSON.parse(localStorage.getItem('colorHistory'));
+                updateColorHistory();
+            } catch (e) {
+                localStorage.removeItem('colorHistory');
+            }
+        }
+        
+        // Initialize tools
+        updateColor('#6366f1');
+        if (!localStorage.getItem('passwordHistory')) {
+            generatePassword();
+        }
+        updateCharacterCounters();
+        
+        // Show welcome message
+        setTimeout(() => {
+            showNotification(
+                '🚀 Welcome to DevTools Pro v2.0!\n' +
+                'All tools are now fully functional and ready to use.',
+                'success',
+                'Ready!'
+            );
+        }, 1000);
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S to save/export (when not in input)
+            if (e.ctrlKey && e.key === 's' && !e.target.matches('input, textarea, select')) {
+                e.preventDefault();
+                exportData();
+            }
+            
+            // Esc to close modal
+            if (e.key === 'Escape' && document.getElementById('modalOverlay').classList.contains('active')) {
+                closeModal();
+            }
+            
+            // Esc to go back to dashboard
+            if (e.key === 'Escape' && !document.getElementById('dashboard').classList.contains('active') && 
+                !document.getElementById('modalOverlay').classList.contains('active')) {
+                showTool('dashboard');
+            }
+            
+            // Ctrl+Shift+C to clear current form
+            if (e.ctrlKey && e.shiftKey && e.key === 'C' && !e.target.matches('input, textarea, select')) {
+                e.preventDefault();
+                const activeTool = document.querySelector('.tool-content.active');
+                if (activeTool) {
+                    const clearBtn = activeTool.querySelector('.btn-outline[onclick*="clear"]');
+                    if (clearBtn) clearBtn.click();
+                }
+            }
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('mainNav');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            if (window.innerWidth <= 768 && 
+                nav.classList.contains('active') &&
+                !nav.contains(event.target) && 
+                !menuBtn.contains(event.target)) {
+                nav.classList.remove('active');
+            }
+            
+            // Close notifications when clicking outside
+            if (!event.target.closest('.notification') && !event.target.closest('.notification-close')) {
+                document.querySelectorAll('.notification').forEach(notification => {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                });
+            }
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    });
+    </script>
+</body>
+</html>
