@@ -1,0 +1,2704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MyStudy | Academic Suite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="manifest" href='data:application/manifest+json,{"name":"MyStudy Academic Suite","short_name":"MyStudy","start_url":".","display":"standalone","background_color":"#ffffff","theme_color":"#4338ca","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/2693/2693507.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4338ca">
+    
+    <style>
+    :root {
+        --primary: #4338ca;
+        --primary-hover: #4f46e5;
+        --secondary: #6366f1;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --bg-app: #f8fafc;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #f1f5f9;
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+        color: var(--text-main);
+        min-height: 100vh;
+    }
+
+    /* Navigation */
+    .main-nav {
+        background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+        color: white;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    @media (min-width: 768px) {
+        .main-nav {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* App Container */
+    .app-container {
+        display: none;
+        max-width: 1000px;
+        margin: 0 auto 20px auto;
+        background: #ffffff;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+        overflow: hidden;
+        min-height: calc(100vh - 120px);
+    }
+
+    .app-container.active {
+        display: block;
+    }
+
+    /* Common App Header */
+    .app-header {
+        background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+        color: #fff;
+        padding: 35px 20px;
+        text-align: center;
+    }
+
+    .app-header h1 { 
+        margin: 0; 
+        font-size: 2rem; 
+        font-weight: 800; 
+        letter-spacing: -1px; 
+    }
+
+    .app-header p { 
+        margin: 8px 0 0; 
+        font-size: 0.95rem; 
+        opacity: 0.8; 
+        font-weight: 300; 
+    }
+
+    /* Common App Body */
+    .app-body { 
+        padding: 25px 20px; 
+        min-height: 500px;
+    }
+
+    /* Common Input Styling */
+    .input-group { 
+        margin-bottom: 15px; 
+    }
+
+    label { 
+        font-weight: 700; 
+        font-size: 11px; 
+        color: var(--text-muted); 
+        display: block; 
+        margin-bottom: 6px; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px; 
+    }
+
+    .input-icon-wrapper { 
+        position: relative; 
+    }
+
+    .input-icon-wrapper i { 
+        position: absolute; 
+        left: 15px; 
+        top: 50%; 
+        transform: translateY(-50%); 
+        color: var(--text-muted); 
+    }
+
+    .input-icon-wrapper input, 
+    .input-icon-wrapper select { 
+        padding-left: 45px; 
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-sizing: border-box;
+        font-size: 14px;
+        transition: all 0.3s;
+        background: #fff;
+    }
+
+    input:focus, select:focus { 
+        outline: none; 
+        border-color: var(--primary); 
+        box-shadow: 0 0 0 4px rgba(67, 56, 202, 0.1); 
+    }
+
+    /* Common Grid */
+    .grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+        gap: 15px; 
+    }
+
+    /* Common Table Container */
+    .table-container { 
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #f1f5f9;
+        margin-top: 20px;
+        overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #f8fafc; padding: 15px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); text-align: left; }
+    td { padding: 12px; border-top: 1px solid #f1f5f9; }
+
+    /* Common Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.3s;
+        border: none;
+    }
+
+    .btn-primary { 
+        background: var(--primary); 
+        color: #fff; 
+    }
+
+    .btn-primary:hover { 
+        background: var(--primary-hover); 
+        transform: translateY(-2px); 
+    }
+
+    .btn-outline { 
+        background: transparent; 
+        border: 1px solid #e2e8f0; 
+        color: var(--text-main); 
+    }
+
+    .btn-danger { 
+        background: #fee2e2; 
+        color: var(--danger); 
+        padding: 8px 12px; 
+    }
+
+    /* Common Modal */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        backdrop-filter: blur(8px);
+    }
+
+    .modal-content {
+        background: white;
+        padding: 40px;
+        border-radius: 24px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+    }
+
+    /* Ad Slots - Uniform across all apps */
+    .ad-wrapper { 
+        display: flex; 
+        justify-content: center; 
+        width: 100%; 
+        padding: 15px 0; 
+        margin: 20px 0;
+    }
+
+    .ad-container { 
+        width: 100%;
+        max-width: 728px;
+        min-height: 90px;
+        padding: 10px;
+        text-align: center;
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ad-label { 
+        font-size: 9px; 
+        color: #94a3b8; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        display: block; 
+        margin-bottom: 5px; 
+    }
+
+    .ad-text {
+        color: #cbd5e1;
+        font-size: 11px;
+    }
+
+    /* Footer - Uniform across all apps */
+    .app-footer {
+        text-align: center;
+        padding: 25px 20px;
+        color: var(--text-muted);
+        font-size: 14px;
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
+        margin-top: 30px;
+    }
+
+    .app-footer a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .app-footer a:hover {
+        text-decoration: underline;
+    }
+
+    /* Print Styles */
+    @media print {
+        .no-print, .nav-btn, .main-nav, .ad-wrapper, .app-footer,
+        .countdown-col, .countdown { 
+            display: none !important; 
+        }
+        
+        body { 
+            background: white; 
+            padding: 0; 
+            margin: 0;
+        }
+        
+        .app-container { 
+            box-shadow: none; 
+            width: 100%; 
+            margin: 0;
+            border-radius: 0;
+            border: none;
+        }
+        
+        .app-header { 
+            background: #000 !important; 
+            color: #fff !important; 
+            padding: 30px; 
+        }
+        
+        table {
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background: #f0f0f0 !important;
+            color: #000 !important;
+        }
+        
+        /* Ensure countdown column is completely removed in print */
+        .countdown-col, td.countdown, th.countdown-col {
+            display: none !important;
+            width: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+        
+        /* Adjust table width after removing countdown column */
+        table#examTable {
+            width: 100% !important;
+        }
+        
+        table#examTable th:nth-child(6),
+        table#examTable td:nth-child(6) {
+            display: none !important;
+        }
+    }
+
+    /* Home Page */
+    .home-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        text-align: center;
+        min-height: calc(100vh - 120px);
+    }
+
+    .app-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin: 40px 0;
+    }
+
+    .app-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .app-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+
+    .app-card i {
+        font-size: 40px;
+        color: var(--primary);
+        margin-bottom: 20px;
+    }
+
+    .app-card h3 {
+        margin: 0 0 10px 0;
+        color: var(--text-main);
+    }
+
+    .app-card p {
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0 0 20px 0;
+    }
+
+    .card-features {
+        font-size: 12px;
+        color: var(--text-muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 15px;
+    }
+
+    .card-features span {
+        background: #f1f5f9;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    /* CGPA Specific Styles */
+    .gpa-badge {
+        background: #eef2ff;
+        color: var(--primary);
+        padding: 18px;
+        border-radius: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .cgpa-display {
+        background: linear-gradient(135deg, #064e3b 0%, #10b981 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 24px;
+        text-align: center;
+        margin-top: 30px;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+    }
+
+    #cgpaResult { 
+        font-size: 3rem; 
+        display: block; 
+        font-weight: 800; 
+        line-height: 1; 
+        margin: 5px 0; 
+    }
+
+    .standing-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* Exam Planner Specific Styles */
+    #notif-status {
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        text-align: center;
+        background: #f8fafc; 
+        font-weight: 700;
+        color: var(--text-muted);
+        border: 1px solid #e2e8f0;
+    }
+
+    .countdown { 
+        font-weight: 800; 
+        color: var(--primary); 
+        font-family: 'Courier New', monospace; 
+        white-space: nowrap; 
+        min-width: 140px;
+    }
+
+    .guide-box { 
+        background: #eff6ff; 
+        border: 1px solid #bfdbfe; 
+        border-radius: 16px; 
+        padding: 20px; 
+        margin-top: 25px; 
+    }
+
+    .guide-box h4 { 
+        margin: 0 0 10px 0; 
+        color: var(--primary); 
+        display: flex; 
+        align-items: center; 
+        gap: 10px; 
+    }
+
+    .guide-list { 
+        margin: 0; 
+        padding-left: 20px; 
+        font-size: 13px; 
+        line-height: 1.6; 
+        color: #1e40af; 
+    }
+
+    /* Lecture Planner Specific Styles */
+    .course-block {
+        color: #fff;
+        border-radius: 12px;
+        padding: 12px;
+        font-size: 12px;
+        margin-bottom: 10px;
+        text-align: left;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        position: relative;
+        border-left: 4px solid rgba(0,0,0,0.2);
+    }
+
+    .del-btn {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        opacity: 0.7;
+        transition: 0.2s;
+    }
+
+    .del-btn:hover { 
+        opacity: 1; 
+        transform: scale(1.1); 
+    }
+
+    .toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100px);
+        background: var(--success);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        z-index: 3000;
+        transition: 0.4s;
+    }
+
+    .toast.show { 
+        transform: translateX(-50%) translateY(20px); 
+    }
+
+    /* Study Planner Specific Styles */
+    .tabs-nav { 
+        display: flex; 
+        background: #f8fafc; 
+        border-bottom: 1px solid #e2e8f0; 
+    }
+
+    .tab-link { 
+        flex: 1; 
+        padding: 20px; 
+        border: none; 
+        background: none; 
+        cursor: pointer; 
+        font-weight: 700; 
+        color: var(--text-muted); 
+        font-size: 12px; 
+        text-transform: uppercase; 
+        transition: 0.3s; 
+        border-bottom: 3px solid transparent; 
+    }
+
+    .tab-link.active { 
+        color: var(--primary); 
+        border-bottom-color: var(--primary); 
+        background: white; 
+    }
+
+    .tab-content { 
+        padding: 30px; 
+        display: none; 
+    }
+
+    .tab-content.active { 
+        display: block; 
+    }
+
+    .planner-table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin-top: 20px; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 12px; 
+        overflow: hidden; 
+    }
+
+    .study-card { 
+        padding: 14px; 
+        border-radius: 12px; 
+        margin-bottom: 10px; 
+        color: white; 
+        position: relative; 
+        cursor: pointer; 
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+    }
+
+    .study-card.done { 
+        opacity: 0.5; 
+        text-decoration: line-through; 
+        filter: grayscale(1); 
+    }
+
+    .card-meta { 
+        display: block; 
+        font-size: 10px; 
+        margin-top: 8px; 
+        background: rgba(0,0,0,0.15); 
+        padding: 4px 8px; 
+        border-radius: 6px; 
+        width: fit-content; 
+    }
+
+    .recall-container { 
+        background: #fffcf0; 
+        border: 2px solid #fef3c7; 
+        border-radius: 20px; 
+        padding: 25px; 
+        margin-bottom: 30px; 
+    }
+
+    .scratchpad { 
+        width: 100%; 
+        height: 320px; 
+        border: none; 
+        background: transparent; 
+        font-family: "Georgia", serif; 
+        font-size: 18px; 
+        resize: none; 
+        outline: none; 
+        line-height: 1.6; 
+    }
+
+    .history-vault { 
+        margin-top: 20px; 
+        background: #f8fafc; 
+        border-radius: 15px; 
+        padding: 20px; 
+        border: 1px solid #e2e8f0; 
+    }
+
+    .history-item { 
+        background: white; 
+        padding: 12px; 
+        border-radius: 10px; 
+        border: 1px solid #e2e8f0; 
+        margin-bottom: 10px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+    }
+
+    .history-info b { 
+        display: block; 
+        font-size: 14px; 
+        color: var(--text-main); 
+    }
+
+    .history-info span { 
+        font-size: 11px; 
+        color: var(--text-muted); 
+    }
+
+    .timer-box {
+        background: #f8fafc;
+        border: 3px dashed #cbd5e1;
+        border-radius: 40px;
+        padding: 60px 20px;
+        text-align: center;
+        margin: 20px auto;
+        max-width: 450px;
+    }
+
+    .timer-clock { 
+        font-size: 5.5rem; 
+        font-weight: 800; 
+        font-family: monospace; 
+        color: var(--primary); 
+        margin: 20px 0; 
+        letter-spacing: -3px; 
+    }
+
+    .btn-panic { 
+        background: var(--danger); 
+        color: white; 
+        display: flex; 
+        margin: 0 auto 20px auto; 
+        width: 100%; 
+        max-width: 400px;
+        justify-content: center;
+    }
+
+    .btn-ghost { 
+        background: #f1f5f9; 
+        color: var(--text-muted); 
+    }
+
+    .btn-sm { 
+        padding: 6px 12px; 
+        font-size: 11px; 
+    }
+
+    /* Custom Notification */
+    .custom-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        padding: 20px;
+        min-width: 300px;
+        max-width: 400px;
+        z-index: 9999;
+        transform: translateX(150%);
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        border-left: 5px solid var(--primary);
+    }
+
+    .custom-notification.show {
+        transform: translateX(0);
+    }
+
+    .notification-icon {
+        font-size: 24px;
+        color: var(--primary);
+        margin-right: 15px;
+    }
+
+    .notification-title {
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .notification-message {
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.5;
+        margin-top: 10px;
+    }
+
+    .notification-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    /* Mobile responsive fixes - Study Planner specific */
+    @media screen and (max-width: 600px) {
+        table, thead, tbody, th, td, tr { display: block; }
+        thead tr { position: absolute; top: -9999px; left: -9999px; }
+        tr { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; padding: 10px; background: #fff; position: relative; }
+        td { border: none; position: relative; padding-left: 45% !important; min-height: 40px; }
+        td:before {
+            position: absolute; left: 15px; width: 40%; white-space: nowrap;
+            font-weight: 700; font-size: 10px; color: var(--text-muted); text-transform: uppercase;
+        }
+        td:nth-of-type(1):before { content: "Course Title"; }
+        td:nth-of-type(2):before { content: "Course Code"; }
+        td:nth-of-type(3):before { content: "Units"; }
+        td:nth-of-type(4):before { content: "Grade"; }
+        .btn-danger { position: absolute; top: 10px; right: 10px; }
+        
+        /* Study Planner Mobile Fixes */
+        .tabs-nav { 
+            flex-direction: column; 
+            gap: 0;
+        }
+        
+        .tab-link { 
+            padding: 15px; 
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .tab-link.active {
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .timer-clock { 
+            font-size: 3.5rem; 
+        }
+        
+        /* Study Planner Button Organization Fix */
+        .recall-container > div:first-child {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+        
+        .recall-container > div:first-child > div:last-child {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .btn-sm {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            justify-content: center;
+        }
+        
+        /* Timer buttons organization */
+        .timer-box > div:last-child {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .timer-box > div:last-child .btn {
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        
+        /* Panic button fix */
+        .btn-panic {
+            min-width: auto;
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+        
+        /* Ad container mobile */
+        .ad-container {
+            min-height: 70px;
+            padding: 8px;
+        }
+        
+        .btn-ghost, .btn-primary {
+            padding: 10px 15px;
+            font-size: 13px;
+        }
+        
+        /* Exam planner countdown mobile */
+        .countdown {
+            min-width: 120px;
+            font-size: 12px;
+        }
+        
+        /* Custom notification mobile */
+        .custom-notification {
+            left: 20px;
+            right: 20px;
+            max-width: none;
+        }
+    }
+
+    @media screen and (max-width: 768px) and (min-width: 601px) {
+        /* Tablet fixes */
+        .tabs-nav {
+            flex-wrap: wrap;
+        }
+        
+        .tab-link {
+            min-width: 33.33%;
+            padding: 15px;
+        }
+    }
+
+    /* Study Planner Button Grid Fix */
+    .button-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 15px 0;
+    }
+    
+    .button-grid .btn {
+        width: 100%;
+    }
+    
+    /* Back Button */
+    .back-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(67, 56, 202, 0.3);
+        z-index: 1000;
+        transition: all 0.3s;
+    }
+    
+    .back-btn:hover {
+        background: var(--primary-hover);
+        transform: scale(1.1);
+    }
+    
+    .back-btn i {
+        font-size: 20px;
+    }
+    
+    @media print {
+        .back-btn {
+            display: none !important;
+        }
+    }
+    </style>
+</head>
+<body>
+    <!-- Custom Notification Container -->
+    <div id="customNotification" class="custom-notification">
+        <button class="notification-close" onclick="hideCustomNotification()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="notification-title">
+            <i id="notificationIcon" class="fa-solid fa-circle-info"></i>
+            <span id="notificationTitle">Notification</span>
+        </div>
+        <div id="notificationMessage" class="notification-message"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-brand">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>MyStudy Academic Suite</span>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="showPage('home')">
+                <i class="fa-solid fa-home"></i> Home
+            </button>
+               <button class="nav-btn" onclick="window.open('https://cbt.mystudy.name.ng', '_blank')">
+    <i class="fa-solid fa-graduation-cap"></i> CBT
+</button>
+            <button class="nav-btn" onclick="showPage('cgpa')">
+                <i class="fa-solid fa-calculator"></i> CGPA
+            </button>
+            <button class="nav-btn" onclick="showPage('exam')">
+                <i class="fa-solid fa-calendar-check"></i> Exam
+            </button>
+            <button class="nav-btn" onclick="showPage('lecture')">
+                <i class="fa-solid fa-clock-rotate-left"></i> Lecture
+            </button>
+            <button class="nav-btn" onclick="showPage('study')">
+                <i class="fa-solid fa-brain"></i> Study
+            </button>
+   
+        </div>
+    </nav>
+
+    <!-- Back Button -->
+    <button class="back-btn no-print" onclick="goBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <!-- Home Page -->
+    <div id="home" class="home-container">
+        <h1>Welcome to MyStudy Academic Suite</h1>
+        <p style="color: var(--text-muted); max-width: 600px; margin: 20px auto;">
+            A comprehensive collection of academic tools designed to help students excel in their studies. 
+            Each tool works independently with full functionality.
+        </p>
+        
+        <div class="app-grid">
+<div class="app-card" onclick="window.open('https://cbt.mystudy.name.ng', '_blank'); return false;">
+    <i class="fa-solid fa-graduation-cap"></i>
+    <h3>CBT PRACTICE</h3>
+    <p>A professional Computer-Based Test platform with real-time assessment, subject selection, and detailed analytics.</p>
+    <div class="card-features">
+        <span>English + 3 Electives</span>
+        <span>50 Questions Each</span>
+        <span>Real-Time Timer</span>
+        <span>Performance Reports</span>
+    </div>
+</div>      <div class="app-card" onclick="showPage('cgpa')">
+                <i class="fa-solid fa-calculator"></i>
+                <h3>CGPA Calculator</h3>
+                <p>Track your academic performance with multi-semester CGPA calculation and grading system support.</p>
+                <div class="card-features">
+                    <span>5/4 Point Scale</span>
+                    <span>Save Semesters</span>
+                    <span>Print Transcript</span>
+                    <span>Class Standing</span>
+                </div>
+            </div>
+            
+            <div class="app-card" onclick="showPage('exam')">
+                <i class="fa-solid fa-calendar-check"></i>
+                <h3>Exam Timetable Planner</h3>
+                <p>Schedule exams with countdown timers and notifications. Get alerts 3 hours before each exam.</p>
+                <div class="card-features">
+                    <span>Countdown Timer</span>
+                    <span>Notifications</span>
+                    <span>Mobile PWA</span>
+                    <span>Print Schedule</span>
+                </div>
+            </div>
+            
+            <div class="app-card" onclick="showPage('lecture')">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h3>Lecture Timetable Planner</h3>
+                <p>Create and manage your weekly lecture timetable with color-coded courses and venue details.</p>
+                <div class="card-features">
+                    <span>Color Coding</span>
+                    <span>Time Conflict Check</span>
+                    <span>Mobile Friendly</span>
+                    <span>Print Schedule</span>
+                </div>
+            </div>
+            
+            <div class="app-card" onclick="showPage('study')">
+                <i class="fa-solid fa-brain"></i>
+                <h3>Study Planner</h3>
+                <p>Create study schedules, use Feynman technique, and track progress with Pomodoro timer.</p>
+                <div class="card-features">
+                    <span>Pomodoro Timer</span>
+                    <span>Feynman Method</span>
+                    <span>Panic Mode</span>
+                    <span>History Vault</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ad Slot on Home Page -->
+        <div class="ad-wrapper no-print">
+            <div class="ad-container">
+                <span class="ad-label">ADVERTISEMENT</span>
+                <div class="ad-text">Desktop Wide / Mobile Square</div>
+            </div>
+        </div>
+        
+        <!-- Footer on Home Page -->
+        <div class="app-footer">
+            Developed by <a href="https://www.linkedin.com/in/ola1de" target="_blank">Olawande</a><br>
+            <i class="fa-solid fa-bolt"></i> Powered by <strong>MyStudy</strong> • Academic Tools Suite
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">
+                All data is stored locally in your browser. No data is sent to any server.
+            </p>
+        </div>
+    </div>
+
+    <!-- CGPA Calculator -->
+    <div id="cgpa" class="app-container">
+        <div class="app-header">
+            <h1><i class="fa-solid fa-calculator"></i> CGPA Calculator</h1>
+            
+        </div>
+
+        <div class="app-body">
+            <div class="grid">
+                <div class="input-group">
+                    <label><i class="fa-solid fa-user"></i> Student Name</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-id-card"></i>
+                        <input type="text" id="studentName" placeholder="e.g. John Doe" oninput="saveCGPADraft()">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fa-solid fa-building-columns"></i> Institution</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-school"></i>
+                        <input type="text" id="institution" placeholder="e.g. University Name" oninput="saveCGPADraft()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label><i class="fa-solid fa-book-open"></i> Course of Study</label>
+                <div class="input-icon-wrapper">
+                    <i class="fa-solid fa-dna"></i>
+                    <input type="text" id="courseStudy" placeholder="e.g. BSc. Biochemistry" oninput="saveCGPADraft()">
+                </div>
+            </div>
+
+            <div class="entry-section">
+                <div class="grid" style="background: #f8fafc; padding: 15px; border-radius: 16px;">
+                    <div class="input-group" style="margin:0">
+                        <label>Semester</label>
+                        <select id="semester">
+                            <option>1st Semester</option><option>2nd Semester</option>
+                            <option>3rd Semester</option><option>4th Semester</option>
+                            <option>5th Semester</option><option>6th Semester</option>
+                            <option>7th Semester</option><option>8th Semester</option>
+                            <option>9th Semester</option><option>10th Semester</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="margin:0">
+                        <label>Grading System</label>
+                        <select id="grading" onchange="updateGradeDropdowns()">
+                            <option value="5">5-Point Scale (A-F)</option>
+                            <option value="4">4-Point Scale (A-F)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Course Title</th>
+                                <th>Course Code</th>
+                                <th>Units</th>
+                                <th>Grade</th>
+                                <th class="no-print"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="courses"></tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top:15px; display: flex; gap: 10px;" class="no-print">
+                    <button class="btn btn-outline" style="flex:1" onclick="addCourse()"><i class="fa-solid fa-plus"></i> Add Course</button>
+                    <button class="btn btn-primary" style="flex:1" onclick="saveSemester()"><i class="fa-solid fa-floppy-disk"></i> Save Semester</button>
+                </div>
+
+                <div class="gpa-badge">
+                    <span style="font-weight: 700; color: var(--text-muted);">SEMESTER PERFORMANCE</span>
+                    <span style="font-size: 22px; font-weight: 800;"><i class="fa-solid fa-chart-line" style="font-size: 16px; margin-right: 8px;"></i> GPA: <span id="gpa">0.00</span></span>
+                </div>
+            </div>
+
+            <div id="printMasterArea"></div>
+
+            <div class="cgpa-display">
+                <p style="text-transform: uppercase; font-weight: 700; letter-spacing: 2px; opacity: 0.8; margin-bottom: 5px; font-size: 12px;">Cumulative Grade Point Average</p>
+                <strong id="cgpaResult">0.00</strong>
+                <div id="standing" class="standing-badge">Status: Pending</div>
+            </div>
+
+            <!-- Ad Slot in CGPA -->
+            <div class="ad-wrapper no-print">
+                <div class="ad-container">
+                    <span class="ad-label">ADVERTISEMENT</span>
+                    <div class="ad-text">Small Ad Slot</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" class="no-print">
+                <button class="btn btn-primary" onclick="window.print()" style="background: var(--success);"><i class="fa-solid fa-print"></i> Print Transcript</button>
+                <button class="btn btn-outline" onclick="openCGPAConfirm()" style="color:var(--danger)"><i class="fa-solid fa-trash-can"></i> Reset App</button>
+            </div>
+        </div>
+
+        <!-- Footer in CGPA -->
+        <div class="app-footer">
+            Developed by <a href="https://www.linkedin.com/in/ola1de" target="_blank">Olawande</a><br>
+            <i class="fa-solid fa-bolt"></i> Powered by <strong>MyStudy</strong> • Academic Tools
+        </div>
+    </div>
+
+    <!-- Exam Planner -->
+    <div id="exam" class="app-container">
+        <div class="app-header">
+            <h1><i class="fa-solid fa-calendar-check"></i> Exam Timetable Planner</h1>
+            <p>Professional Academic Scheduling System</p>
+        </div>
+
+        <div class="app-body">
+            <div id="notif-status" class="no-print"><i class="fa-solid fa-bell"></i> Checking System Alerts...</div>
+
+            <div class="no-print" style="margin-bottom: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn btn-primary" style="background:var(--success)" onclick="enableNotifications()"><i class="fa-solid fa-bell"></i> Enable Alerts</button>
+                <button class="btn btn-primary" id="installBtn" style="background:var(--warning); display:none;"><i class="fa-solid fa-download"></i> Install App</button>
+            </div>
+
+            <div class="grid">
+                <div class="input-group">
+                    <label><i class="fa-solid fa-building-columns"></i> Department</label>
+                    <div class="input-icon-wrapper"><i class="fa-solid fa-dna"></i><input type="text" id="dept" placeholder="Biochemistry" oninput="saveExamProfile()"></div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fa-solid fa-layer-group"></i> Level</label>
+                    <div class="input-icon-wrapper"><i class="fa-solid fa-stairs"></i>
+                        <select id="level" onchange="saveExamProfile()">
+                            <option value="">Select Level</option><option>100L</option><option>200L</option><option>300L</option><option>400L</option><option>500L</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label><i class="fa-solid fa-book-open"></i> Semester</label>
+                <div class="input-icon-wrapper"><i class="fa-solid fa-calendar-week"></i>
+                    <select id="semesterExam" onchange="saveExamProfile()">
+                        <option value="">Select Semester</option><option>First Semester</option><option>Second Semester</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="no-print" style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 10px; border: 1px solid #e2e8f0;">
+                <label style="color:var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-calendar-plus"></i> New Exam Entry</label>
+                <div class="grid">
+                    <input type="text" id="examTitle" placeholder="Course Title (e.g. Modern Physics)">
+                    <input type="text" id="examCode" style="text-transform: uppercase;" placeholder="Course Code (e.g. PHY201)">
+                </div>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top:10px;">
+                    <div><label>Date</label><input type="date" id="examDate"></div>
+                    <div><label>Start Time</label><input type="time" id="examStart"></div>
+                    <div><label>Venue</label><input type="text" id="examVenue" placeholder="Hall / Venue"></div>
+                </div>
+                <button class="btn btn-primary" onclick="addExam()" style="margin-top:10px;"><i class="fa-solid fa-plus"></i> Add to Timetable</button>
+            </div>
+
+            <div class="table-container">
+                <table id="examTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Course Title</th> 
+                            <th>Code</th> 
+                            <th>Time</th>
+                            <th>Venue</th>
+                            <th class="countdown-col no-print">Remaining</th>
+                            <th class="no-print"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="examTbody"></tbody>
+                </table>
+            </div>
+
+            <!-- Ad Slot in Exam Planner -->
+            <div class="ad-wrapper no-print">
+                <div class="ad-container">
+                    <span class="ad-label">ADVERTISEMENT</span>
+                    <div class="ad-text">Desktop Wide / Mobile Square</div>
+                </div>
+            </div>
+
+            <div class="guide-box no-print">
+                <h4><i class="fa-solid fa-mobile-screen-button"></i> Mobile Setup Guide</h4>
+                <ul class="guide-list">
+                    <li><strong>iPhone Users:</strong> Tap "Share" in Safari and select <b>"Add to Home Screen"</b>.</li>
+                    <li><strong>Android Users:</strong> Tap the 3 dots in Chrome and select <b>"Install App"</b>.</li>
+                    <li><strong>Alerts:</strong> Disable "Battery Saver" to ensure the 3-hour exam reminder triggers.</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" class="no-print">
+                <button class="btn btn-primary" onclick="window.print()" style="background: var(--text-main);"><i class="fa-solid fa-print"></i> Print Exam Timetable</button>
+                <button class="btn btn-outline" onclick="openExamResetModal()" style="color:var(--danger)"><i class="fa-solid fa-trash-can"></i> Reset Planner</button>
+            </div>
+        </div>
+
+        <!-- Footer in Exam Planner -->
+        <div class="app-footer">
+            Developed by <a href="https://www.linkedin.com/in/ola1de" target="_blank">Olawande</a><br>
+            <i class="fa-solid fa-bolt"></i> Powered by <strong>MyStudy</strong> • Academic Tools
+        </div>
+    </div>
+
+    <!-- Lecture Planner -->
+    <div id="lecture" class="app-container">
+        <div class="app-header">
+            <h1><i class="fa-solid fa-clock-rotate-left"></i> Lecture Timetable Planner</h1>
+            <p>Professional Academic Scheduling System</p>
+        </div>
+
+        <div class="app-body">
+            <div id="toast" class="toast">Lecture Added Successfully!</div>
+
+            <div class="grid">
+                <div class="input-group">
+                    <label><i class="fa-solid fa-user"></i> Student Name</label>
+                    <div class="input-icon-wrapper"><i class="fa-solid fa-signature"></i><input type="text" id="studentNameLecture" placeholder="Full Name" oninput="saveLectureInfo()"></div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fa-solid fa-building-columns"></i> Institution</label>
+                    <div class="input-icon-wrapper"><i class="fa-solid fa-university"></i><input type="text" id="institutionLecture" placeholder="University Name" oninput="saveLectureInfo()"></div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="input-group">
+                    <label><i class="fa-solid fa-dna"></i> Department</label>
+                    <div class="input-icon-wrapper"><i class="fa-solid fa-atom"></i><input type="text" id="department" placeholder="Course of Study" oninput="saveLectureInfo()"></div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fa-solid fa-stairs"></i> Level</label>
+                    <div class="input-icon-wrapper"><i class="fa-solid fa-layer-group"></i>
+                        <select id="levelLecture" onchange="saveLectureInfo()">
+                            <option value="">Select Level</option>
+                            <option>100L</option><option>200L</option><option>300L</option><option>400L</option><option>500L</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fa-solid fa-calendar-days"></i> Semester</label>
+                    <div class="input-icon-wrapper"><i class="fa-solid fa-calendar-week"></i>
+                        <select id="semesterLecture" onchange="saveLectureInfo()">
+                            <option value="">Select Semester</option>
+                            <option>First Semester</option><option>Second Semester</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-print" style="background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 30px;">
+                <label style="color:var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-calendar-plus"></i> New Lecture Entry</label>
+                
+                <div class="grid">
+                    <input type="text" id="titleLecture" placeholder="Course Title (e.g. Biochemistry)">
+                    <input type="text" id="codeLecture" style="text-transform: uppercase;" placeholder="Course Code (e.g. BCH 301)">
+                </div>
+
+                <div class="grid" style="margin-top:15px;">
+                    <div><label>Lecture Day</label>
+                        <select id="day">
+                            <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option>
+                        </select>
+                    </div>
+                    <div><label>Start Time</label><input type="time" id="startLecture"></div>
+                    <div><label>Venue (Optional)</label><input type="text" id="venueLecture" placeholder="e.g. Hall A / Lecture Theater"></div>
+                </div>
+
+                <button class="btn btn-primary" onclick="addLecture()"><i class="fa-solid fa-plus"></i> Add to Timetable</button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th style="width: 120px;">Day</th><th>Lecture Timeline (Chronological)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><th>MON</th><td id="Monday"></td></tr>
+                        <tr><th>TUE</th><td id="Tuesday"></td></tr>
+                        <tr><th>WED</th><td id="Wednesday"></td></tr>
+                        <tr><th>THU</th><td id="Thursday"></td></tr>
+                        <tr><th>FRI</th><td id="Friday"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Ad Slot in Lecture Planner -->
+            <div class="ad-wrapper no-print">
+                <div class="ad-container">
+                    <span class="ad-label">ADVERTISEMENT</span>
+                    <div class="ad-text">Small Ad Slot</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;" class="no-print">
+                <button class="btn btn-primary" style="background: var(--text-main);" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Timetable</button>
+                <button class="btn btn-outline" style="color:var(--danger)" onclick="showStudyConfirmModal('Clear Timetable?', 'This will permanently delete all your lecture data. This action cannot be undone.', function() {
+                    localStorage.removeItem('tt_lectures'); 
+                    localStorage.removeItem('tt_info');
+                    lectureData = [];
+                    renderTimetable();
+                    document.getElementById('studentNameLecture').value = '';
+                    document.getElementById('institutionLecture').value = '';
+                    document.getElementById('department').value = '';
+                    document.getElementById('levelLecture').value = '';
+                    document.getElementById('semesterLecture').value = '';
+                    showCustomNotification('Timetable Cleared', 'All lecture data has been reset successfully.', 'success');
+                })"><i class="fa-solid fa-trash-can"></i> Reset Timetable</button>
+            </div>
+        </div>
+
+        <!-- Footer in Lecture Planner -->
+        <div class="app-footer">
+            Developed by <a href="https://www.linkedin.com/in/ola1de" target="_blank">Olawande</a><br>
+            <i class="fa-solid fa-bolt"></i> Powered by <strong>MyStudy</strong> • Academic Tools
+        </div>
+    </div>
+
+    <!-- Study Planner -->
+    <div id="study" class="app-container">
+        <div class="app-header">
+            <h1><i class="fa-solid fa-brain"></i> Study Planner Generator</h1>
+           
+        </div>
+
+        <div class="app-body">
+            <nav class="tabs-nav no-print">
+                <button class="tab-link active" onclick="switchTab(event, 'plannerTab')"><i class="fa-solid fa-calendar-days"></i> Planner</button>
+                <button class="tab-link" onclick="switchTab(event, 'recallTab')"><i class="fa-solid fa-brain"></i> Recall</button>
+                <button class="tab-link" onclick="switchTab(event, 'timerTab')"><i class="fa-solid fa-stopwatch"></i> Focus</button>
+            </nav>
+
+            <main id="plannerTab" class="tab-content active">
+                <button class="btn btn-panic no-print" onclick="triggerPanicMode()">
+                    <i class="fa-solid fa-bolt-lightning"></i> PANIC MODE: Reschedule Missed to Tomorrow
+                </button>
+
+                <!-- Ad Slot in Study Planner -->
+                <div class="ad-wrapper no-print">
+                    <div class="ad-container">
+                        <span class="ad-label">ADVERTISEMENT</span>
+                        <div class="ad-text">Small Ad Slot</div>
+                    </div>
+                </div>
+
+                <section class="grid no-print">
+                    <div class="input-group"><label>Course Title</label><input type="text" id="courseTitleStudy" /></div>
+                    <div class="input-group"><label>Course Code</label><input type="text" id="courseCodeStudy" placeholder="CHM 302" /></div>
+                    <div class="input-group"><label>Exam Date</label><input type="date" id="examDateStudy" /></div>
+                    <div class="input-group"><label>Daily Time</label><input type="time" id="studyTime" value="09:00" /></div>
+                    <div class="input-group"><label>Resource URL</label><input type="url" id="courseLink" placeholder="LMS Link..." /></div>
+                    <div class="input-group"><label>Credit Units</label><input type="number" id="credits" value="3" /></div>
+                    <div class="input-group"><label>Goal (Hrs/Day)</label><input type="number" id="dailyHours" value="2" /></div>
+                </section>
+
+                <div class="no-print" style="margin-bottom:25px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center; background:#f8fafc; padding:15px; border-radius:15px;">
+                    <label><input type="checkbox" class="day-check" value="Monday" checked> Mon</label>
+                    <label><input type="checkbox" class="day-check" value="Tuesday" checked> Tue</label>
+                    <label><input type="checkbox" class="day-check" value="Wednesday" checked> Wed</label>
+                    <label><input type="checkbox" class="day-check" value="Thursday" checked> Thu</label>
+                    <label><input type="checkbox" class="day-check" value="Friday" checked> Fri</label>
+                    <label><input type="checkbox" class="day-check" value="Saturday"> Sat</label>
+                    <label><input type="checkbox" class="day-check" value="Sunday"> Sun</label>
+                </div>
+
+                <div class="button-grid no-print">
+                    <button class="btn btn-primary" onclick="addCourseStudy()">
+                        <i class="fa-solid fa-plus"></i> Generate Study Plan
+                    </button>
+                </div>
+
+                <table class="planner-table">
+                    <thead><tr><th style="width:140px;">Weekday</th><th>Study Sessions</th></tr></thead>
+                    <tbody id="plannerBody"></tbody>
+                </table>
+
+                <div class="button-grid no-print" style="margin-top:25px;">
+                    <button class="btn btn-ghost" onclick="window.print()"><i class="fa-solid fa-file-pdf"></i> Save as PDF</button>
+                    <button class="btn" style="background:var(--danger); color:white" onclick="confirmResetStudy()"><i class="fa-solid fa-power-off"></i> Clear All</button>
+                </div>
+            </main>
+
+            <main id="recallTab" class="tab-content">
+                <div class="grid">
+                    <div class="input-group"><label>Course Code</label><input type="text" id="recCode" oninput="saveStudyDraft()" /></div>
+                    <div class="input-group"><label>Course Title</label><input type="text" id="recTitle" oninput="saveStudyDraft()" /></div>
+                    <div class="input-group" style="grid-column: 1 / -1;"><label>Topic</label><input type="text" id="recTopic" oninput="saveStudyDraft()" /></div>
+                </div>
+                
+                <div class="recall-container">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                        <h3 style="margin:0; color:var(--primary)"><i class="fa-solid fa-pen-nib"></i> Feynman Scratchpad</h3>
+                        <div class="button-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
+                            <button class="btn btn-primary btn-sm" onclick="saveToHistory()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                            <button class="btn btn-ghost btn-sm" onclick="exportDoc()"><i class="fa-solid fa-file-word"></i> .DOC</button>
+                            <button class="btn btn-sm" style="background:var(--danger); color:white" onclick="confirmClearRecall()"><i class="fa-solid fa-eraser"></i> Clear</button>
+                        </div>
+                    </div>
+                    <textarea id="brainDump" class="scratchpad" placeholder="Explain the concept simply..." oninput="saveStudyDraft()"></textarea>
+                </div>
+
+                <div class="history-vault">
+                    <h4 style="margin:0 0 15px 0;"><i class="fa-solid fa-clock-rotate-left"></i> History Vault</h4>
+                    <div id="historyList"></div>
+                </div>
+            </main>
+
+            <main id="timerTab" class="tab-content">
+                <div class="timer-box">
+                    <div id="timerPhase" style="font-weight:800; color:var(--secondary); letter-spacing:3px;">POMODORO SESSION</div>
+                    <div class="timer-clock" id="timerDisplay">25:00</div>
+                    <div class="button-grid" style="max-width: 350px; margin: 0 auto;">
+                        <button class="btn" style="background:var(--success); color:white;" onclick="startTimerStudy()" id="startTimerBtn"><i class="fa-solid fa-play"></i> Start</button>
+                        <button class="btn" style="background:var(--warning); color:white;" onclick="pauseTimer()" id="pauseResumeBtn"><i class="fa-solid fa-pause"></i> Pause</button>
+                        <button class="btn" style="background:var(--danger); color:white;" onclick="resetTimer()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                    </div>
+                    <div id="quoteBox" style="margin-top:40px; font-style:italic; font-size:14px; color:var(--text-muted); transition: opacity 0.5s ease;"></div>
+                </div>
+            </main>
+
+            <!-- Ad Slot in Study Planner -->
+            <div class="ad-wrapper no-print">
+                <div class="ad-container">
+                    <span class="ad-label">ADVERTISEMENT</span>
+                    <div class="ad-text">Small Ad Slot</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer in Study Planner -->
+        <div class="app-footer">
+            Developed by <a href="https://www.linkedin.com/in/ola1de" target="_blank">Olawande</a><br>
+            <i class="fa-solid fa-bolt"></i> Powered by <strong>MyStudy</strong> • Academic Tools
+        </div>
+    </div>
+
+    <!-- Modals (Shared across apps) -->
+    <div class="modal-overlay" id="customModal">
+        <div class="modal-content">
+            <div id="modalIcon" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"><i class="fa-solid fa-circle-info"></i></div>
+            <h3 id="modalTitle" style="margin: 0 0 10px 0; font-size: 24px;">Notification</h3>
+            <p id="modalMsg" style="color: var(--text-muted); margin-bottom: 25px;"></p>
+            <button class="btn btn-primary" onclick="closeModal('customModal')">Got it</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal-content">
+            <div style="font-size: 50px; color: var(--danger); margin-bottom: 20px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <h3 style="margin: 0 0 10px 0; color:var(--danger);">Clear Everything?</h3>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">This will permanently wipe all semesters and settings. This cannot be undone.</p>
+            <div style="display:flex; flex-direction: column; gap:10px;">
+                <button class="btn btn-primary" style="background:var(--danger)" onclick="executeCGPAReset()">Delete Data</button>
+                <button class="btn btn-outline" onclick="closeModal('resetModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Planner Confirm Modal -->
+    <div class="modal-overlay" id="studyConfirmModal">
+        <div class="modal-content">
+            <div style="font-size: 50px; color: var(--danger); margin-bottom: 20px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <h3 style="margin: 0 0 10px 0; color:var(--danger);" id="studyConfirmTitle">Confirm Action</h3>
+            <p id="studyConfirmMessage" style="color: var(--text-muted); margin-bottom: 25px;"></p>
+            <div style="display:flex; flex-direction: column; gap:10px;">
+                <button class="btn btn-primary" style="background:var(--danger)" id="studyConfirmButton">Confirm</button>
+                <button class="btn btn-outline" onclick="closeModal('studyConfirmModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lecture Planner Modals -->
+    <div class="modal-overlay" id="alertModal">
+        <div class="modal-content">
+            <div style="font-size: 50px; color: var(--warning); margin-bottom: 20px;"><i class="fa-solid fa-circle-exclamation"></i></div>
+            <h3 style="margin: 0 0 10px 0;">Wait a Moment</h3>
+            <p id="alertText" style="color: var(--text-muted); margin-bottom: 25px;"></p>
+            <button class="btn btn-primary" onclick="closeModal('alertModal')">Got it</button>
+        </div>
+    </div>
+
+<script>
+// ============================
+// DOMAIN VERIFICATION & REDIRECT
+// ============================
+const allowedDomains = [
+    'academicsuite.blogspot.com',
+    'www.academicsuite.blogspot.com',
+    'theenetnaija.blogspot.com',
+    'mystudy.name.ng',
+    'www.mystudy.name.ng'
+];
+
+function getCurrentDomain() {
+    // Remove protocol and any trailing slashes/paths
+    return window.location.hostname;
+}
+
+function isDomainAllowed() {
+    const currentDomain = getCurrentDomain();
+    return allowedDomains.includes(currentDomain);
+}
+
+function verifyDomainAndRedirect() {
+    if (!isDomainAllowed()) {
+        // If domain is not in allowed list, redirect to LinkedIn
+        window.location.href = 'https://www.linkedin.com/in/ola1de';
+        return false;
+    }
+    return true;
+}
+
+// Run verification immediately when script loads
+verifyDomainAndRedirect();
+
+// Also check when page visibility changes (in case of iframe tricks)
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        // Re-check domain when page becomes visible again
+        setTimeout(verifyDomainAndRedirect, 100);
+    }
+});
+
+// Check on load and every 5 seconds for additional security
+setInterval(verifyDomainAndRedirect, 5000);
+
+// ============================
+// CUSTOM NOTIFICATION SYSTEM
+// ============================
+function showCustomNotification(title, message, type = 'info') {
+    const notification = document.getElementById('customNotification');
+    const icon = document.getElementById('notificationIcon');
+    const titleEl = document.getElementById('notificationTitle');
+    const messageEl = document.getElementById('notificationMessage');
+    
+    // Set icon based on type
+    const icons = {
+        'info': 'fa-circle-info',
+        'success': 'fa-circle-check',
+        'warning': 'fa-circle-exclamation',
+        'danger': 'fa-circle-xmark'
+    };
+    
+    // Set color based on type
+    const colors = {
+        'info': '#4338ca',
+        'success': '#10b981',
+        'warning': '#f59e0b',
+        'danger': '#ef4444'
+    };
+    
+    icon.className = `fa-solid ${icons[type] || icons.info}`;
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    notification.style.borderLeftColor = colors[type] || colors.info;
+    
+    // Show notification
+    notification.classList.add('show');
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        hideCustomNotification();
+    }, 5000);
+}
+
+function hideCustomNotification() {
+    document.getElementById('customNotification').classList.remove('show');
+}
+
+// ============================
+// APPLICATION STATE MANAGEMENT
+// ============================
+let appState = {
+    currentPage: 'home',
+    previousPage: null,
+    history: ['home'],
+    studyTab: 'plannerTab'
+};
+
+// Load app state from localStorage
+function loadAppState() {
+    const savedState = localStorage.getItem('MyStudy_app_state');
+    if (savedState) {
+        appState = JSON.parse(savedState);
+    }
+}
+
+// Save app state to localStorage
+function saveAppState() {
+    localStorage.setItem('MyStudy_app_state', JSON.stringify(appState));
+}
+
+// Initialize app state
+loadAppState();
+
+// ============================
+// NAVIGATION MANAGEMENT
+// ============================
+function showPage(pageId) {
+    // Update history
+    if (appState.currentPage !== pageId) {
+        appState.previousPage = appState.currentPage;
+        appState.currentPage = pageId;
+        
+        // Add to history if not already there
+        if (!appState.history.includes(pageId)) {
+            appState.history.push(pageId);
+        }
+        
+        saveAppState();
+    }
+    
+    // Hide all pages
+    document.getElementById('home').style.display = 'none';
+    document.querySelectorAll('.app-container').forEach(container => {
+        container.classList.remove('active');
+    });
+    
+    // Update navigation buttons
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected page
+    if (pageId === 'home') {
+        document.getElementById('home').style.display = 'block';
+        document.querySelector('.nav-btn[onclick="showPage(\'home\')"]').classList.add('active');
+    } else {
+        document.getElementById(pageId).classList.add('active');
+        document.querySelector(`.nav-btn[onclick="showPage('${pageId}')"]`).classList.add('active');
+    }
+    
+    // Initialize the specific app
+    if (pageId === 'cgpa') {
+        loadCGPAData();
+    } else if (pageId === 'exam') {
+        initExamApp();
+    } else if (pageId === 'lecture') {
+        loadLectureData();
+    } else if (pageId === 'study') {
+        initStudyApp();
+    }
+}
+
+// Go back to previous page
+function goBack() {
+    if (appState.history.length > 1) {
+        // Remove current page from history
+        appState.history.pop();
+        // Get previous page
+        const previousPage = appState.history[appState.history.length - 1];
+        appState.currentPage = previousPage;
+        saveAppState();
+        showPage(previousPage);
+    }
+}
+
+// Handle browser back button
+window.addEventListener('popstate', function(event) {
+    goBack();
+});
+
+// ============================
+// INITIALIZE ON LOAD
+// ============================
+function initializeApp() {
+    // Show the saved page from app state
+    showPage(appState.currentPage);
+    
+    // Initialize Study Planner tab if applicable
+    if (appState.currentPage === 'study' && appState.studyTab) {
+        setTimeout(() => {
+            switchTab(null, appState.studyTab);
+        }, 100);
+    }
+}
+
+// ============================
+// CGPA CALCULATOR FUNCTIONS
+// ============================
+let savedSemesters = [];
+
+function showCGPAModal(title, msg, icon = "fa-circle-info") {
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalMsg').innerText = msg;
+    document.getElementById('modalIcon').innerHTML = `<i class="fa-solid ${icon}"></i>`;
+    document.getElementById('customModal').style.display = 'flex';
+}
+
+function closeModal(id) { 
+    document.getElementById(id).style.display = 'none'; 
+}
+
+function openCGPAConfirm() { 
+    document.getElementById('resetModal').style.display = 'flex'; 
+}
+
+function executeCGPAReset() { 
+    showStudyConfirmModal(
+        'Clear Everything?',
+        'This will permanently wipe all semesters and settings. This cannot be undone.',
+        () => {
+            localStorage.removeItem('cgpa_data'); 
+            savedSemesters = [];
+            document.getElementById('studentName').value = '';
+            document.getElementById('institution').value = '';
+            document.getElementById('courseStudy').value = '';
+            document.getElementById('courses').innerHTML = '';
+            document.getElementById('gpa').innerText = '0.00';
+            document.getElementById('cgpaResult').innerText = '0.00';
+            document.getElementById('standing').innerText = 'Status: Pending';
+            document.getElementById('printMasterArea').innerHTML = '';
+            closeModal('resetModal');
+            addCourse();
+            showCustomNotification('Data Cleared', 'All CGPA data has been reset successfully.', 'success');
+        }
+    );
+}
+
+function saveCGPADraft() {
+    const draft = {
+        name: document.getElementById('studentName').value,
+        inst: document.getElementById('institution').value,
+        course: document.getElementById('courseStudy').value,
+        records: savedSemesters
+    };
+    localStorage.setItem('cgpa_data', JSON.stringify(draft));
+}
+
+function loadCGPAData() {
+    const data = JSON.parse(localStorage.getItem('cgpa_data'));
+    if (data) {
+        document.getElementById('studentName').value = data.name || "";
+        document.getElementById('institution').value = data.inst || "";
+        document.getElementById('courseStudy').value = data.course || "";
+        if (data.records) {
+            savedSemesters = data.records;
+            renderMasterPrint();
+            updateOverallCGPA();
+        }
+    }
+    // Clear existing courses and add one empty row
+    document.getElementById("courses").innerHTML = "";
+    addCourse();
+}
+
+function updateGradeDropdowns() {
+    const scale = document.getElementById("grading").value;
+    document.querySelectorAll(".c-grade").forEach(sel => {
+        sel.innerHTML = scale == "5" 
+        ? '<option value="">-</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option>'
+        : '<option value="">-</option><option>A</option><option>B</option><option>C</option><option>D</option><option>F</option>';
+    });
+    calculate();
+}
+
+function addCourse() {
+    const scale = document.getElementById("grading").value;
+    const tr = document.createElement("tr");
+    const opts = scale == "5" 
+    ? '<option value="">-</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option>'
+    : '<option value="">-</option><option>A</option><option>B</option><option>C</option><option>D</option><option>F</option>';
+    
+    tr.innerHTML = `
+        <td><input class="c-title" placeholder="e.g. Chemistry"></td>
+        <td><input class="c-code" placeholder="CHM101" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()"></td>
+        <td><input class="c-unit" type="number" onchange="calculate()" placeholder="0"></td>
+        <td><select class="c-grade" onchange="calculate()">${opts}</select></td>
+        <td class="no-print"><button class="btn btn-danger" onclick="this.parentElement.parentElement.remove(); calculate()"><i class="fa-solid fa-xmark"></i></button></td>
+    `;
+    document.getElementById("courses").appendChild(tr);
+}
+
+function calculate() {
+    let units = 0, pts = 0;
+    const scale = document.getElementById("grading").value;
+    document.querySelectorAll("#courses tr").forEach(r => {
+        const u = Math.abs(parseFloat(r.querySelector(".c-unit").value))||0;
+        const g = r.querySelector(".c-grade").value;
+        const gp = {A:scale==5?5:4,B:scale==5?4:3,C:scale==5?3:2,D:scale==5?2:1,E:1,F:0}[g]||0;
+        units += u; pts += u * gp;
+    });
+    document.getElementById("gpa").innerText = units ? (pts/units).toFixed(2) : "0.00";
+}
+
+function saveSemester() {
+    const gpa = parseFloat(document.getElementById("gpa").innerText);
+    if (!gpa || gpa <= 0) {
+        showCustomNotification('No Courses', 'Please enter valid units and grades first.', 'warning');
+        return;
+    }
+    
+    let details = [];
+    document.querySelectorAll("#courses tr").forEach(r => {
+        details.push({
+            title: r.querySelector(".c-title").value,
+            code: r.querySelector(".c-code").value.toUpperCase(),
+            unit: Math.abs(r.querySelector(".c-unit").value),
+            grade: r.querySelector(".c-grade").value
+        });
+    });
+
+    savedSemesters.push({ name: document.getElementById("semester").value, gpa: gpa, courses: details });
+    renderMasterPrint();
+    updateOverallCGPA();
+    saveCGPADraft();
+
+    document.getElementById("courses").innerHTML = "";
+    document.getElementById("gpa").innerText = "0.00";
+    showCustomNotification('Semester Logged', 'Data added to cumulative records.', 'success');
+    addCourse();
+}
+
+function getStanding(cgpa, scale) {
+    if (scale == 5) {
+        if (cgpa >= 4.5) return "First Class Honors";
+        if (cgpa >= 3.5) return "Second Class Upper";
+        if (cgpa >= 2.4) return "Second Class Lower";
+        if (cgpa >= 1.5) return "Third Class";
+        return "Pass";
+    } else {
+        if (cgpa >= 3.5) return "First Class Honors";
+        if (cgpa >= 3.0) return "Second Class Upper";
+        if (cgpa >= 2.0) return "Second Class Lower";
+        if (cgpa >= 1.0) return "Third Class";
+        return "Pass";
+    }
+}
+
+function renderMasterPrint() {
+    const area = document.getElementById("printMasterArea");
+    area.innerHTML = "";
+    savedSemesters.forEach(sem => {
+        let html = `
+            <div style="margin-top:30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;">
+                <h3 style="color:var(--primary); margin-bottom:10px;"><i class="fa-solid fa-calendar-day"></i> ${sem.name} <span style="float:right; font-size:16px; color:var(--text-muted)">GPA: ${sem.gpa.toFixed(2)}</span></h3>
+                <div class="table-container"><table>
+                    <thead><tr><th>Course Title</th><th>Course Code</th><th>Units</th><th>Grade</th></tr></thead>
+                    <tbody>`;
+        sem.courses.forEach(c => {
+            html += `<tr><td>${c.title}</td><td>${c.code}</td><td>${c.unit}</td><td>${c.grade}</td></tr>`;
+        });
+        area.innerHTML += html + `</tbody></table></div></div>`;
+    });
+}
+
+function updateOverallCGPA() {
+    if (!savedSemesters.length) return;
+    const total = savedSemesters.reduce((s, i) => s + i.gpa, 0);
+    const avg = (total / savedSemesters.length).toFixed(2);
+    const scale = document.getElementById("grading").value;
+    
+    document.getElementById("cgpaResult").innerText = avg;
+    document.getElementById("standing").innerText = getStanding(avg, scale);
+}
+
+// ============================
+// EXAM PLANNER FUNCTIONS
+// ============================
+let exams = JSON.parse(localStorage.getItem('azura_exams_final')) || [];
+let sentAlerts = JSON.parse(localStorage.getItem('azura_sent_alerts')) || {};
+let examTimerInterval = null;
+
+function initExamApp() {
+    checkNotifStatus(); 
+    loadExamData(); 
+    startExamTimer();
+}
+
+function startExamTimer() {
+    // Clear any existing timer
+    if (examTimerInterval) {
+        clearInterval(examTimerInterval);
+    }
+    
+    // Start new timer that updates every second
+    examTimerInterval = setInterval(() => {
+        updateExamCountdowns();
+    }, 1000);
+    
+    // Initial update
+    updateExamCountdowns();
+}
+
+function updateExamCountdowns() {
+    const now = new Date().getTime();
+    exams.forEach((ex, idx) => {
+        const examDateTime = new Date(ex.date + 'T' + ex.start).getTime();
+        const diff = examDateTime - now;
+
+        const cell = document.getElementById('t_' + idx);
+        if (cell) {
+            cell.innerHTML = getTimerString(diff);
+        }
+
+        // Check for 3-hour notification
+        if (diff > 0 && diff <= (3 * 3600000) && !sentAlerts[ex.code + ex.date]) {
+            if (Notification.permission === "granted") {
+                new Notification("EXAM STARTING SOON", { 
+                    body: `${ex.code} starts in 3 hours at ${ex.venue || 'Venue'}.`, 
+                    requireInteraction: true 
+                });
+                sentAlerts[ex.code + ex.date] = true;
+                localStorage.setItem('azura_sent_alerts', JSON.stringify(sentAlerts));
+            }
+        }
+    });
+}
+
+function getTimerString(diff) {
+    if (diff <= 0) return '<span style="color:#94a3b8; font-weight:normal;">Started/Past</span>';
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    return `${d}d ${h}h ${m}m ${s}s`;
+}
+
+function checkNotifStatus() {
+    const status = document.getElementById('notif-status');
+    if (!("Notification" in window)) {
+        status.innerHTML = 'Alerts not supported.';
+    } else if (Notification.permission === "granted") {
+        status.innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--success)"></i> Reminder is Active.';
+        status.style.background = "#f0fdf4";
+    }
+}
+
+function enableNotifications() {
+    Notification.requestPermission().then(permission => {
+        checkNotifStatus();
+        if(permission === "granted") new Notification("MyStudy", { body: "Exam alerts enabled!" });
+    });
+}
+
+function saveExamProfile() {
+    const profile = { 
+        dept: document.getElementById('dept').value, 
+        level: document.getElementById('level').value, 
+        semester: document.getElementById('semesterExam').value 
+    };
+    localStorage.setItem('azura_exam_profile_final', JSON.stringify(profile));
+}
+
+function loadExamData() {
+    const profile = JSON.parse(localStorage.getItem('azura_exam_profile_final'));
+    if (profile) {
+        document.getElementById('dept').value = profile.dept || "";
+        document.getElementById('level').value = profile.level || "";
+        document.getElementById('semesterExam').value = profile.semester || "";
+    }
+    renderExams();
+}
+
+function addExam() {
+    const title = document.getElementById('examTitle').value;
+    const code = document.getElementById('examCode').value.toUpperCase();
+    const date = document.getElementById('examDate').value;
+    const start = document.getElementById('examStart').value;
+    const venue = document.getElementById('examVenue').value;
+
+    if (!title || !code || !date || !start) {
+        showCustomNotification('Missing Information', 'Please fill in all required fields: Title, Code, Date, and Start Time.', 'warning');
+        return;
+    }
+    
+    exams.push({title, code, date, start, venue});
+    localStorage.setItem('azura_exams_final', JSON.stringify(exams));
+    renderExams();
+    
+    // Clear form
+    document.getElementById('examTitle').value = '';
+    document.getElementById('examCode').value = '';
+    document.getElementById('examDate').value = '';
+    document.getElementById('examStart').value = '';
+    document.getElementById('examVenue').value = '';
+    
+    showCustomNotification('Exam Added', `${code} has been added to your timetable.`, 'success');
+}
+
+function renderExams() {
+    const tbody = document.getElementById('examTbody');
+    tbody.innerHTML = '';
+    exams.sort((a,b) => new Date(a.date+'T'+a.start) - new Date(b.date+'T'+b.start));
+
+    exams.forEach((ex, idx) => {
+        const examDateTime = new Date(ex.date + 'T' + ex.start).getTime();
+        const diff = examDateTime - new Date().getTime();
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="font-weight:bold;">${new Date(ex.date).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})}</td>
+            <td>${ex.title}</td> 
+            <td>${ex.code}</td> 
+            <td>${ex.start}</td> 
+            <td>${ex.venue || '-'}</td>
+            <td class="countdown no-print" id="t_${idx}">${getTimerString(diff)}</td>
+            <td class="no-print"><button class="btn btn-danger" onclick="removeExam(${idx})"><i class="fa-solid fa-xmark"></i></button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+    // Start timer after rendering
+    startExamTimer();
+}
+
+function removeExam(idx) {
+    showStudyConfirmModal(
+        'Delete Exam?',
+        'Are you sure you want to delete this exam from your timetable?',
+        () => {
+            exams.splice(idx,1); 
+            localStorage.setItem('azura_exams_final', JSON.stringify(exams)); 
+            renderExams();
+            showCustomNotification('Exam Removed', 'Exam has been deleted from your timetable.', 'success');
+        }
+    );
+}
+
+function openExamResetModal() { 
+    showStudyConfirmModal(
+        'Clear All Exam Data?',
+        'This will permanently delete all your exam data. This action cannot be undone.',
+        () => {
+            localStorage.removeItem('azura_exams_final');
+            localStorage.removeItem('azura_exam_profile_final');
+            localStorage.removeItem('azura_sent_alerts');
+            exams = [];
+            sentAlerts = {};
+            renderExams();
+            document.getElementById('dept').value = '';
+            document.getElementById('level').value = '';
+            document.getElementById('semesterExam').value = '';
+            checkNotifStatus();
+            showCustomNotification('Data Cleared', 'All exam data has been reset successfully.', 'success');
+        }
+    );
+}
+
+// ============================
+// LECTURE PLANNER FUNCTIONS
+// ============================
+let lectureData = [];
+
+function formatTo12Hr(timeStr) {
+    if (!timeStr) return "";
+    let [hours, minutes] = timeStr.split(':');
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes}${ampm}`;
+}
+
+function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function customAlert(msg) {
+    document.getElementById('alertText').innerText = msg;
+    document.getElementById('alertModal').style.display = 'flex';
+}
+
+function loadLectureData() {
+    const saved = localStorage.getItem('tt_lectures');
+    const info = JSON.parse(localStorage.getItem('tt_info'));
+    if (info) {
+        document.getElementById('studentNameLecture').value = info.name || "";
+        document.getElementById('institutionLecture').value = info.inst || "";
+        document.getElementById('department').value = info.dept || "";
+        document.getElementById('levelLecture').value = info.lvl || "";
+        document.getElementById('semesterLecture').value = info.sem || "";
+    }
+    if (saved) {
+        lectureData = JSON.parse(saved);
+        renderTimetable();
+    }
+}
+
+function saveLectureInfo() {
+    const info = {
+        name: document.getElementById('studentNameLecture').value,
+        inst: document.getElementById('institutionLecture').value,
+        dept: document.getElementById('department').value,
+        lvl: document.getElementById('levelLecture').value,
+        sem: document.getElementById('semesterLecture').value
+    };
+    localStorage.setItem('tt_info', JSON.stringify(info));
+}
+
+function addLecture() {
+    const title = document.getElementById("titleLecture").value;
+    const code = document.getElementById("codeLecture").value.toUpperCase();
+    const day = document.getElementById("day").value;
+    const start = document.getElementById("startLecture").value;
+    const venue = document.getElementById("venueLecture").value;
+
+    if (!title || !code || !start) {
+        showCustomNotification('Missing Information', 'Please fill in the course title, code, and start time.', 'warning');
+        return;
+    }
+
+    const clash = lectureData.some(l => 
+        l.day === day && l.start === start
+    );
+
+    if (clash) {
+        showCustomNotification('Time Conflict', `This time slot already has a lecture on ${day}.`, 'warning');
+        return;
+    }
+
+    const colors = ['#4338ca', '#1e293b', '#059669', '#7c3aed', '#db2777', '#d97706'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    
+    lectureData.push({ id: Date.now(), title, code, day, start, venue, color });
+    localStorage.setItem('tt_lectures', JSON.stringify(lectureData));
+    renderTimetable();
+    showToast();
+    showCustomNotification('Lecture Added', `${code} has been added to your timetable.`, 'success');
+    ['titleLecture', 'codeLecture', 'startLecture', 'venueLecture'].forEach(id => document.getElementById(id).value = "");
+}
+
+function renderTimetable() {
+    ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].forEach(d => document.getElementById(d).innerHTML = "");
+    lectureData.sort((a,b) => a.start.localeCompare(b.start));
+
+    lectureData.forEach(l => {
+        const block = document.createElement("div");
+        block.className = "course-block";
+        block.style.background = l.color;
+        block.innerHTML = `
+            <span class="del-btn no-print" onclick="deleteLecture(${l.id})"><i class="fa-solid fa-circle-xmark"></i></span>
+            <div style="font-weight:800; font-size: 13px; margin-bottom: 2px; text-transform:uppercase;">${l.code}</div>
+            <div style="margin-bottom: 8px; font-weight: 300; opacity: 0.9;">${l.title}</div>
+            <div style="font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:5px;">
+                <i class="fa-solid fa-clock"></i> ${formatTo12Hr(l.start)}
+            </div>
+            ${l.venue ? `<div style="font-size: 10px; opacity: 0.9; margin-top: 5px; display:flex; align-items:center; gap:5px;">
+                <i class="fa-solid fa-location-dot"></i> ${l.venue}
+            </div>` : ''}
+        `;
+        document.getElementById(l.day).appendChild(block);
+    });
+}
+
+function deleteLecture(id) {
+    showStudyConfirmModal(
+        'Delete Lecture?',
+        'Are you sure you want to delete this lecture from your timetable?',
+        () => {
+            lectureData = lectureData.filter(l => l.id !== id);
+            localStorage.setItem('tt_lectures', JSON.stringify(lectureData));
+            renderTimetable();
+            showCustomNotification('Lecture Removed', 'Lecture has been deleted from your timetable.', 'success');
+        }
+    );
+}
+
+// ============================
+// STUDY PLANNER FUNCTIONS
+// ============================
+let coursesStudy = JSON.parse(localStorage.getItem('az_v14_data')) || [];
+let history = JSON.parse(localStorage.getItem('az_v14_history')) || [];
+let cachedQuotes = ["Simplicity is the key to mastery."];
+
+let timerRef = null;
+let secondsLeft = parseInt(localStorage.getItem('az_timer_seconds')) || 1500;
+let isBreak = localStorage.getItem('az_timer_break') === 'true';
+let isTimerPaused = false;
+
+const bell = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+
+function showStudyConfirmModal(title, message, onConfirm) {
+    document.getElementById('studyConfirmTitle').textContent = title;
+    document.getElementById('studyConfirmMessage').textContent = message;
+    
+    const confirmBtn = document.getElementById('studyConfirmButton');
+    confirmBtn.onclick = function() {
+        onConfirm();
+        closeModal('studyConfirmModal');
+    };
+    
+    document.getElementById('studyConfirmModal').style.display = 'flex';
+}
+
+function initStudyApp() {
+    renderPlanner(); 
+    renderHistory(); 
+    updateTimerUI(); 
+    
+    // Restore Recall Drafts from localStorage
+    document.getElementById('recCode').value = localStorage.getItem('az_v14_r_code') || '';
+    document.getElementById('recTitle').value = localStorage.getItem('az_v14_r_title') || '';
+    document.getElementById('recTopic').value = localStorage.getItem('az_v14_r_topic') || '';
+    document.getElementById('brainDump').value = localStorage.getItem('az_v14_r_body') || '';
+    
+    // Restore active tab
+    if (appState.studyTab) {
+        switchTab(null, appState.studyTab);
+    }
+    
+    // Only load quotes if we're on the timer tab initially
+    if (appState.studyTab === 'timerTab') {
+        loadQuotes();
+    }
+}
+function switchTab(e, tabId) {
+    // Update tabs
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    if (e) {
+        e.currentTarget.classList.add('active');
+    } else {
+        // Find and activate the corresponding tab button
+        const tabButtons = document.querySelectorAll('.tab-link');
+        tabButtons.forEach(btn => {
+            if (btn.onclick && btn.onclick.toString().includes(tabId)) {
+                btn.classList.add('active');
+            }
+        });
+    }
+    
+    // Save active tab to state
+    appState.studyTab = tabId;
+    saveAppState();
+    
+    // Load quotes when timer tab becomes active
+    if (tabId === 'timerTab') {
+        loadQuotes();
+    }
+}
+
+function initStudyApp() {
+    renderPlanner(); 
+    renderHistory(); 
+    updateTimerUI(); 
+    
+    // Restore Recall Drafts from localStorage
+    document.getElementById('recCode').value = localStorage.getItem('az_v14_r_code') || '';
+    document.getElementById('recTitle').value = localStorage.getItem('az_v14_r_title') || '';
+    document.getElementById('recTopic').value = localStorage.getItem('az_v14_r_topic') || '';
+    document.getElementById('brainDump').value = localStorage.getItem('az_v14_r_body') || '';
+    
+    // Restore active tab
+    if (appState.studyTab) {
+        switchTab(null, appState.studyTab);
+    }
+}
+
+/* --- PERSISTENT TIMER LOGIC --- */
+function startTimerStudy() { 
+    if(!timerRef) {
+        isTimerPaused = false;
+        timerRef = setInterval(() => { 
+            secondsLeft--; 
+            updateTimerUI();
+            
+            // Save state to local storage
+            localStorage.setItem('az_timer_seconds', secondsLeft);
+            localStorage.setItem('az_timer_break', isBreak);
+
+            if(secondsLeft <= 0) { 
+                bell.play(); 
+                clearInterval(timerRef); 
+                timerRef = null; 
+                isBreak = !isBreak; 
+                secondsLeft = isBreak ? 300 : 1500; 
+                updatePauseResumeButton();
+                startTimerStudy(); 
+            } 
+        }, 1000); 
+        updatePauseResumeButton();
+    }
+}
+
+function pauseTimer() { 
+    if (timerRef && !isTimerPaused) {
+        clearInterval(timerRef); 
+        timerRef = null;
+        isTimerPaused = true;
+        updatePauseResumeButton();
+    } else if (isTimerPaused) {
+        startTimerStudy();
+    }
+}
+
+function resetTimer() { 
+    clearInterval(timerRef); 
+    timerRef = null; 
+    isBreak = false;
+    secondsLeft = 1500; 
+    isTimerPaused = false;
+    localStorage.removeItem('az_timer_seconds');
+    localStorage.removeItem('az_timer_break');
+    updateTimerUI(); 
+    updatePauseResumeButton();
+}
+
+function updateTimerUI() {
+    const m = Math.floor(secondsLeft / 60), s = secondsLeft % 60;
+    document.getElementById('timerDisplay').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+    document.getElementById('timerPhase').innerText = isBreak ? "BREAK PHASE" : "POMODORO SESSION";
+}
+
+function updatePauseResumeButton() {
+    const pauseResumeBtn = document.getElementById('pauseResumeBtn');
+    if (isTimerPaused) {
+        pauseResumeBtn.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
+        pauseResumeBtn.style.background = 'var(--success)';
+    } else {
+        pauseResumeBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+        pauseResumeBtn.style.background = 'var(--warning)';
+    }
+}
+
+/* --- RECALL LOGIC --- */
+function saveStudyDraft() {
+    localStorage.setItem('az_v14_r_code', document.getElementById('recCode').value);
+    localStorage.setItem('az_v14_r_title', document.getElementById('recTitle').value);
+    localStorage.setItem('az_v14_r_topic', document.getElementById('recTopic').value);
+    localStorage.setItem('az_v14_r_body', document.getElementById('brainDump').value);
+}
+
+function saveToHistory() {
+    const code = document.getElementById('recCode').value;
+    const title = document.getElementById('recTitle').value;
+    const topic = document.getElementById('recTopic').value;
+    const body = document.getElementById('brainDump').value;
+    if(!body.trim()) {
+        showCustomNotification('Empty Work', 'Write something before saving.', 'warning');
+        return;
+    }
+
+    history.unshift({
+        id: Date.now(),
+        code: code || "Untitled",
+        title: title || "",
+        topic: topic || "General Recall",
+        body: body,
+        date: new Date().toLocaleString()
+    });
+    localStorage.setItem('az_v14_history', JSON.stringify(history));
+    renderHistory();
+    showCustomNotification('Saved', 'Work added to History Vault.', 'success');
+}
+
+function renderHistory() {
+    const list = document.getElementById('historyList');
+    list.innerHTML = history.length ? '' : '<p style="font-size:12px; color:var(--text-muted)">No saved work found.</p>';
+    history.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+            <div class="history-info">
+                <b>${item.code} - ${item.topic}</b>
+                <span>${item.date}</span>
+            </div>
+            <div style="display:flex; gap:5px;">
+                <button class="btn btn-ghost btn-sm" onclick="loadHistoryItem(${item.id})"><i class="fa-solid fa-upload"></i></button>
+                <button class="btn btn-sm" style="color:var(--danger)" onclick="deleteHistoryItem(${item.id})"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function deleteHistoryItem(id) {
+    showStudyConfirmModal(
+        'Confirm Delete',
+        'Are you sure you want to delete this work from your history?',
+        () => {
+            const item = history.find(h => h.id === id);
+            history = history.filter(h => h.id !== id);
+            localStorage.setItem('az_v14_history', JSON.stringify(history));
+            renderHistory();
+            showCustomNotification('Deleted', `"${item.code}: ${item.topic}" has been deleted.`, 'success');
+        }
+    );
+}
+
+function loadHistoryItem(id) {
+    const item = history.find(h => h.id === id);
+    if(item) {
+        document.getElementById('recCode').value = item.code;
+        document.getElementById('recTitle').value = item.title;
+        document.getElementById('recTopic').value = item.topic;
+        document.getElementById('brainDump').value = item.body;
+        saveStudyDraft();
+        showCustomNotification('Loaded', 'Work restored to editor.', 'success');
+    }
+}
+
+function confirmClearRecall() {
+    showStudyConfirmModal(
+        'Clear Scratchpad?',
+        'Are you sure you want to clear the editor? This action cannot be undone.',
+        () => {
+            document.getElementById('brainDump').value = '';
+            saveStudyDraft();
+            showCustomNotification('Cleared', 'Scratchpad has been cleared.', 'success');
+        }
+    );
+}
+
+function exportDoc() {
+    const code = document.getElementById('recCode').value || "Recall";
+    const content = `COURSE: ${code}\nTITLE: ${document.getElementById('recTitle').value}\nTOPIC: ${document.getElementById('recTopic').value}\n\n${document.getElementById('brainDump').value}`;
+    const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+    const link = document.createElement('a'); 
+    link.href = URL.createObjectURL(blob);
+    link.download = `${code}_Recall.doc`; 
+    link.click();
+    showCustomNotification('Exported', 'Document has been downloaded.', 'success');
+}
+
+/* --- PLANNER LOGIC --- */
+function addCourseStudy() {
+    const title = document.getElementById('courseTitleStudy').value;
+    const code = document.getElementById('courseCodeStudy').value.toUpperCase();
+    const date = document.getElementById('examDateStudy').value;
+    const days = Array.from(document.querySelectorAll('.day-check:checked')).map(i => i.value);
+    
+    if(!title || !code || !date || !days.length) {
+        showCustomNotification('Missing Information', 'Please fill in course title, code, exam date, and select at least one study day.', 'warning');
+        return;
+    }
+    
+    coursesStudy.push({
+        id: Date.now(), 
+        title: title,
+        code: code, 
+        date: date,
+        time: document.getElementById('studyTime').value, 
+        hours: document.getElementById('dailyHours').value,
+        days: days, 
+        completed: false, 
+        color: `hsl(${Math.random()*360}, 60%, 45%)`
+    });
+    saveStudy();
+    
+    // Clear form
+    document.getElementById('courseCodeStudy').value = '';
+    document.getElementById('examDateStudy').value = '';
+    document.getElementById('courseTitleStudy').value = '';
+    
+    showCustomNotification('Plan Generated', `${code} study plan has been created.`, 'success');
+}
+
+function renderPlanner() {
+    const body = document.getElementById('plannerBody'); 
+    body.innerHTML = '';
+    const weekdays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    weekdays.forEach(d => { 
+        body.innerHTML += `<tr><td><strong>${d}</strong></td><td id="cell-${d}"></td></tr>`; 
+    });
+    
+    coursesStudy.forEach(c => {
+        const diff = Math.ceil((new Date(c.date) - new Date()) / 86400000);
+        c.days.forEach(day => {
+            const cell = document.getElementById('cell-' + day);
+            if(!cell) return;
+            const card = document.createElement('div');
+            card.className = `study-card ${c.completed ? 'done' : ''}`;
+            card.style.background = c.color; 
+            card.onclick = () => { 
+                c.completed = !c.completed; 
+                saveStudy(); 
+                renderPlanner();
+            };
+            card.innerHTML = `
+                <strong>${c.code}</strong>
+                <span class="card-meta"><i class="fa-regular fa-clock"></i> ${c.time} | ${diff}d left</span>
+                <button onclick="event.stopPropagation(); removeDay(${c.id}, '${day}')" style="position:absolute; bottom:8px; right:8px; border:none; background:none; color:white; cursor:pointer;">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            `;
+            cell.appendChild(card);
+        });
+    });
+}
+
+function saveStudy() { 
+    localStorage.setItem('az_v14_data', JSON.stringify(coursesStudy)); 
+    renderPlanner(); 
+}
+
+function removeDay(id, dayName) {
+    showStudyConfirmModal(
+        'Remove Session?',
+        'Are you sure you want to remove this study session?',
+        () => {
+            const idx = coursesStudy.findIndex(c => c.id === id);
+            if(idx !== -1) { 
+                coursesStudy[idx].days = coursesStudy[idx].days.filter(d => d !== dayName); 
+                if(coursesStudy[idx].days.length === 0) coursesStudy.splice(idx, 1); 
+                saveStudy(); 
+                showCustomNotification('Session Removed', 'Study session has been removed.', 'success');
+            }
+        }
+    );
+}
+
+function triggerPanicMode() {
+    const today = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date());
+    const tomorrow = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(Date.now() + 86400000));
+    let moved = 0;
+    coursesStudy.forEach(c => { 
+        if(c.days.includes(today) && !c.completed) { 
+            if(!c.days.includes(tomorrow)) { 
+                c.days.push(tomorrow); 
+                moved++; 
+            } 
+        } 
+    });
+    saveStudy(); 
+    showCustomNotification('Panic Mode Activated', `${moved} study sessions have been moved to tomorrow.`, 'warning');
+}
+
+function confirmResetStudy() { 
+    showStudyConfirmModal(
+        'Factory Reset?',
+        'Are you sure you want to delete all study planner data? This action cannot be undone.',
+        () => { 
+            localStorage.removeItem('az_v14_data');
+            localStorage.removeItem('az_v14_history');
+            localStorage.removeItem('az_v14_r_code');
+            localStorage.removeItem('az_v14_r_title');
+            localStorage.removeItem('az_v14_r_topic');
+            localStorage.removeItem('az_v14_r_body');
+            localStorage.removeItem('az_timer_seconds');
+            localStorage.removeItem('az_timer_break');
+            coursesStudy = [];
+            history = [];
+            secondsLeft = 1500;
+            isBreak = false;
+            isTimerPaused = false;
+            if (timerRef) {
+                clearInterval(timerRef);
+                timerRef = null;
+            }
+            renderPlanner();
+            renderHistory();
+            updateTimerUI();
+            updatePauseResumeButton();
+            document.getElementById('recCode').value = '';
+            document.getElementById('recTitle').value = '';
+            document.getElementById('recTopic').value = '';
+            document.getElementById('brainDump').value = '';
+            document.getElementById('courseCodeStudy').value = '';
+            document.getElementById('examDateStudy').value = '';
+            document.getElementById('courseTitleStudy').value = '';
+            showCustomNotification('Reset Complete', 'All study planner data has been cleared.', 'success');
+        }
+    ); 
+}
+
+/* --- DYNAMIC QUOTE LOGIC --- */
+function updateQuoteUI() {
+    const box = document.getElementById('quoteBox');
+    box.style.opacity = 0;
+    setTimeout(() => {
+        box.innerText = cachedQuotes[Math.floor(Math.random() * cachedQuotes.length)];
+        box.style.opacity = 1;
+    }, 500);
+}
+
+async function loadQuotes() {
+    try {
+        const r = await fetch("https://raw.githubusercontent.com/ola1de/random-quotes/main/Quotes.txt");
+        const t = await r.text(); 
+        const q = t.split('\n').filter(l => l.includes("Quote:")).map(l => l.replace("Quote:", "").trim());
+        if(q.length > 0) cachedQuotes = q;
+    } catch(e) { 
+        console.log("Using default quotes.");
+    }
+    
+    // Initial display
+    updateQuoteUI();
+    
+    // Set 10-second interval for real-time changes
+    setInterval(updateQuoteUI, 10000);
+}
+
+// Initialize the app
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+// Auto-save timers for each app
+setInterval(() => {
+    if (document.getElementById('cgpa').classList.contains('active')) {
+        saveCGPADraft();
+    }
+    if (document.getElementById('exam').classList.contains('active')) {
+        saveExamProfile();
+    }
+    if (document.getElementById('lecture').classList.contains('active')) {
+        saveLectureInfo();
+    }
+    if (document.getElementById('study').classList.contains('active')) {
+        saveStudyDraft();
+    }
+}, 30000); // Auto-save every 30 seconds
+
+// Clean up timers when leaving exam page
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden && examTimerInterval) {
+        clearInterval(examTimerInterval);
+        examTimerInterval = null;
+    } else if (!document.hidden && document.getElementById('exam').classList.contains('active')) {
+        startExamTimer();
+    }
+});
+</script>
+</body>
+</html>
